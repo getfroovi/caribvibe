@@ -31,22 +31,51 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const publicRoutes = ['/login', '/auth', '/api/stripe/webhook', '/api/magic-admin'];
-  
-  const isPublicRoute = publicRoutes.some(route => request.nextUrl.pathname.startsWith(route));
+  const isPublicRoute = 
+    request.nextUrl.pathname === '/' ||
+    request.nextUrl.pathname === '/login' ||
+    request.nextUrl.pathname === '/admin/login' ||
+    request.nextUrl.pathname.startsWith('/auth') ||
+    request.nextUrl.pathname === '/feed' ||
+    request.nextUrl.pathname === '/shop' ||
+    request.nextUrl.pathname === '/magazine' ||
+    request.nextUrl.pathname === '/about' ||
+    request.nextUrl.pathname === '/vip' ||
+    request.nextUrl.pathname.startsWith('/blog') ||
+    request.nextUrl.pathname.startsWith('/api/') ||
+    request.nextUrl.pathname.match(/\.(.*)$/);
 
+  // If user is not authenticated and trying to access a protected route
   if (!user && !isPublicRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    const url = request.nextUrl.clone();
+    // If they were trying to access admin, send to admin login
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+      url.pathname = '/admin/login';
+    } else {
+      url.pathname = '/login';
+    }
+    return NextResponse.redirect(url);
   }
 
-  // Redirect logged-in users away from the login page
-  const isAuthRoute = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/auth';
-  if (user && isAuthRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/admin'
-    return NextResponse.redirect(url)
+  // If user IS authenticated
+  if (user) {
+    // Check if they are accessing an auth route
+    const isUserAuthRoute = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/auth';
+    const isAdminAuthRoute = request.nextUrl.pathname === '/admin/login';
+    
+    // We cannot reliably check role in middleware without fetching from DB which is slow.
+    // Instead, we just redirect them out of the login pages.
+    if (isUserAuthRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/profile';
+      return NextResponse.redirect(url);
+    }
+    
+    if (isAdminAuthRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin';
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse
