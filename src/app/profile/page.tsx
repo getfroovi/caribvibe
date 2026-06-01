@@ -28,6 +28,9 @@ export default async function ProfilePage() {
     role: profile?.role || 'free',
   };
 
+  const { data: vipSettings } = await supabase.from('vip_settings').select('monthly_price').limit(1).single();
+  const monthlyPrice = vipSettings?.monthly_price || 9.99;
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
@@ -42,7 +45,7 @@ export default async function ProfilePage() {
           </p>
         </div>
 
-        <ClientProfile userProfile={userProfile} />
+        <ClientProfile userProfile={userProfile} monthlyPrice={monthlyPrice} />
       </main>
     </div>
   );

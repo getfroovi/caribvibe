@@ -19,6 +19,7 @@ export default function VIPSettingsPage() {
     page_title: 'Become a VIP Member',
     page_description: 'Get the ultimate theGriot.io experience. Gain unlimited access to premium exclusive content, ad-free viewing, and support local creators.',
     pricing_text: '$9.99/month',
+    monthly_price: 9.99,
   });
 
   useEffect(() => {
@@ -155,6 +156,20 @@ export default function VIPSettingsPage() {
                 placeholder="e.g. $9.99/mo"
                 required
               />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Stripe Subscription Price (USD)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={settings.monthly_price}
+                onChange={e => setSettings({...settings, monthly_price: parseFloat(e.target.value) || 0})}
+                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                placeholder="9.99"
+                required
+              />
+              <p className="text-xs text-zinc-500 mt-2">This sets the actual numerical amount charged by Stripe.</p>
             </div>
           </div>
         </div>

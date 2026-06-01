@@ -19,6 +19,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'You must be logged in to upgrade' }, { status: 401 });
     }
 
+    const { data: vipSettings } = await supabase.from('vip_settings').select('monthly_price').limit(1).single();
+    const monthlyPrice = vipSettings?.monthly_price || 9.99;
+    const unitAmount = Math.round(monthlyPrice * 100);
+
     const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16' as any,
     });
@@ -37,7 +41,7 @@ export async function POST(req: Request) {
               name: 'VIP TV Subscription',
               description: 'Unlock all premium ad-free content.',
             },
-            unit_amount: 999, // $9.99/month
+            unit_amount: unitAmount,
             recurring: {
               interval: 'month',
             },

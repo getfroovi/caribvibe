@@ -16,7 +16,7 @@ type UserProfile = {
   role: string;
 };
 
-export function ClientProfile({ userProfile }: { userProfile: UserProfile }) {
+export function ClientProfile({ userProfile, monthlyPrice = 9.99 }: { userProfile: UserProfile, monthlyPrice?: number }) {
   const [loading, setLoading] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -246,7 +246,7 @@ export function ClientProfile({ userProfile }: { userProfile: UserProfile }) {
                   Upgrade to VIP <ChevronRight className="w-4 h-4 ml-1" />
                 </span>
                 <span className="text-xs font-medium text-white/80 mt-1 uppercase tracking-wide">
-                  $9.99 / Month - Cancel Anytime
+                  ${monthlyPrice.toFixed(2)} / Month - Cancel Anytime
                 </span>
               </Button>
             </form>
