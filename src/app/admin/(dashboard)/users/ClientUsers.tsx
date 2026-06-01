@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldAlert, ShieldCheck, User as UserIcon, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { updateUserRole } from './actions';
+import { updateUserRole, createAdminUser } from './actions';
 
 type Profile = {
   id: string;
@@ -34,13 +34,52 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
     setLoadingId(null);
   };
 
+  const handleCreateAdmin = async (formData: FormData) => {
+    setLoadingId('create');
+    setError(null);
+    const result = await createAdminUser(formData);
+    if (result.error) {
+      setError(result.error);
+    } else {
+      // Reload page to get new users
+      window.location.reload();
+    }
+    setLoadingId(null);
+  };
+
   return (
-    <div className="bg-zinc-950/50 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-xl">
-      {error && (
-        <div className="p-4 bg-red-500/10 border-b border-red-500/20 text-red-400 text-sm font-medium">
-          {error}
-        </div>
-      )}
+    <div className="space-y-8">
+      {/* Create Admin Form */}
+      <div className="bg-zinc-950/50 border border-white/5 rounded-2xl p-6 backdrop-blur-xl">
+        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-amber-500" />
+          Create Administrator
+        </h3>
+        <form action={handleCreateAdmin} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-zinc-400 uppercase">Display Name</label>
+            <input name="name" required placeholder="Admin Name" className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-zinc-400 uppercase">Email</label>
+            <input name="email" type="email" required placeholder="admin@example.com" className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-zinc-400 uppercase">Password</label>
+            <input name="password" type="password" required placeholder="Min 6 chars" className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" />
+          </div>
+          <Button type="submit" disabled={loadingId === 'create'} className="bg-amber-500 hover:bg-amber-600 text-black font-bold h-[38px]">
+            {loadingId === 'create' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Admin'}
+          </Button>
+        </form>
+      </div>
+
+      <div className="bg-zinc-950/50 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-xl">
+        {error && (
+          <div className="p-4 bg-red-500/10 border-b border-red-500/20 text-red-400 text-sm font-medium">
+            {error}
+          </div>
+        )}
       
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-zinc-400">
@@ -133,6 +172,7 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 }
