@@ -99,7 +99,10 @@ export function FeedItem({ video, nextVideo }: FeedItemProps) {
   };
 
   const toggleLike = async () => {
-    if (!user?.id) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUser = session?.user;
+
+    if (!currentUser?.id) {
       toast.error('You must be logged in to like videos');
       return;
     }
@@ -112,7 +115,7 @@ export function FeedItem({ video, nextVideo }: FeedItemProps) {
           .from('video_likes')
           .delete()
           .eq('video_id', video.id)
-          .eq('user_id', user.id);
+          .eq('user_id', currentUser.id);
       } else {
         setIsLiked(true);
         setLikesCount(prev => prev + 1);
@@ -120,7 +123,7 @@ export function FeedItem({ video, nextVideo }: FeedItemProps) {
           .from('video_likes')
           .insert({
             video_id: video.id,
-            user_id: user.id
+            user_id: currentUser.id
           });
       }
     } catch (err) {

@@ -7,7 +7,8 @@ export async function POST(req: Request) {
     
     // Fallback if the user hasn't put their real test secret in .env.local yet
     if (stripeKey === 'sk_test_mock') {
-      return NextResponse.json({ url: '/feed?success=true' });
+      const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      return NextResponse.redirect(`${origin}/feed?success=true`, { status: 303 });
     }
 
     const stripe = new Stripe(stripeKey, {
@@ -37,7 +38,10 @@ export async function POST(req: Request) {
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/feed?canceled=true`,
     });
 
-    return NextResponse.json({ url: session.url });
+    if (session.url) {
+      return NextResponse.redirect(session.url, { status: 303 });
+    }
+    return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

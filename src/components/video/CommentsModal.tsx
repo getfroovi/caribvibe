@@ -51,10 +51,11 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setComments(data as any);
+      setComments((data as any) || []);
     } catch (err: any) {
       console.error(err);
       toast.error('Failed to load comments');
+      setComments([]);
     } finally {
       setLoading(false);
     }
@@ -63,7 +64,11 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-    if (!user?.id) {
+    
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUser = session?.user;
+
+    if (!currentUser?.id) {
       toast.error('You must be logged in to comment');
       return;
     }
@@ -74,7 +79,7 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
         .from('video_comments')
         .insert({
           video_id: videoId,
-          user_id: user.id,
+          user_id: currentUser.id,
           content: newComment.trim(),
         })
         .select(`
@@ -115,7 +120,7 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-x-0 bottom-0 z-50 bg-zinc-950 border-t border-white/10 rounded-t-3xl h-[70vh] flex flex-col shadow-2xl"
+            className="fixed inset-x-0 bottom-0 z-[60] bg-zinc-950 border-t border-white/10 rounded-t-3xl h-[70vh] flex flex-col shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
