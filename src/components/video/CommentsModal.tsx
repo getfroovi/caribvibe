@@ -180,8 +180,8 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
                   <textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    placeholder={user ? "Add a comment..." : "Log in to comment..."}
-                    disabled={!user || posting}
+                    placeholder="Add a comment..."
+                    disabled={posting}
                     className="w-full bg-transparent px-4 py-3 text-sm text-white resize-none max-h-32 min-h-[44px] focus:outline-none disabled:opacity-50"
                     rows={1}
                     onKeyDown={(e) => {
@@ -194,7 +194,7 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
                 </div>
                 <button
                   type="submit"
-                  disabled={!newComment.trim() || !user || posting}
+                  disabled={!newComment.trim() || posting}
                   className="p-3 bg-pink-600 hover:bg-pink-700 disabled:bg-zinc-800 disabled:text-zinc-500 text-white rounded-xl transition-colors flex-shrink-0"
                 >
                   <Send className="w-5 h-5" />

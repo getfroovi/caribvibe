@@ -240,9 +240,14 @@ export function ClientProfile({ userProfile }: { userProfile: UserProfile }) {
             <form action="/api/stripe/checkout" method="POST">
               <Button 
                 type="submit"
-                className="w-full bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white font-bold py-6 rounded-xl transition-all shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:scale-[1.02]"
+                className="w-full h-auto flex flex-col items-center justify-center bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:scale-[1.02]"
               >
-                Upgrade to VIP <ChevronRight className="w-4 h-4 ml-1" />
+                <span className="flex items-center text-lg">
+                  Upgrade to VIP <ChevronRight className="w-4 h-4 ml-1" />
+                </span>
+                <span className="text-xs font-medium text-white/80 mt-1 uppercase tracking-wide">
+                  $9.99 / Month - Cancel Anytime
+                </span>
               </Button>
             </form>
           )}

@@ -44,9 +44,13 @@ export default async function AdminLayout({
             <FileText className="w-4 h-4" />
             Blog & Timeline
           </Link>
-          <Link href="/admin/users" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/subscribers" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
             <Users className="w-4 h-4" />
-            Users
+            Subscribers
+          </Link>
+          <Link href="/admin/users" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+            <ShieldCheck className="w-4 h-4" />
+            Admins
           </Link>
           
           <div className="pt-6 pb-2 px-3">

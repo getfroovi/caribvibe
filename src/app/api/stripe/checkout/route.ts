@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(req: Request) {
   try {
@@ -11,12 +12,23 @@ export async function POST(req: Request) {
       return NextResponse.redirect(`${origin}/feed?success=true`, { status: 303 });
     }
 
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'You must be logged in to upgrade' }, { status: 401 });
+    }
+
     const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16' as any,
     });
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      client_reference_id: user.id,
+      metadata: {
+        supabase_user_id: user.id,
+      },
       line_items: [
         {
           price_data: {
