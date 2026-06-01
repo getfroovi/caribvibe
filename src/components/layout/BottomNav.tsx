@@ -4,15 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, PlaySquare, ShoppingBag, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useUserStore } from '@/store';
 
 export function BottomNav() {
   const pathname = usePathname();
+
+  const { user } = useUserStore();
 
   const navItems = [
     { href: '/', icon: Home, label: 'Home' },
     { href: '/feed', icon: PlaySquare, label: 'Feed' },
     { href: '/shop', icon: ShoppingBag, label: 'Shop' },
-    { href: '/login', icon: User, label: 'Profile' },
+    { href: user ? '/admin' : '/login', icon: User, label: user ? 'Dashboard' : 'Profile' },
   ];
 
   if (pathname.startsWith('/admin')) return null;

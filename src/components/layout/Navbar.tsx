@@ -75,7 +75,7 @@ export function Navbar() {
               </div>
             )}
 
-            <Link href="/login" className="text-gray-300 hover:text-white transition-colors">
+            <Link href={user ? "/admin" : "/login"} className="text-gray-300 hover:text-white transition-colors">
               <User className="w-5 h-5" />
             </Link>
           </div>
@@ -127,9 +127,9 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <Link href="/login" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">
+            <Link href={user ? "/admin" : "/login"} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">
               <User className="w-5 h-5" />
-              Account
+              {user ? 'Dashboard' : 'Account'}
             </Link>
           </div>
         </motion.div>

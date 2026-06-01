@@ -41,5 +41,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Redirect logged-in users away from the login page
+  const isAuthRoute = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/auth';
+  if (user && isAuthRoute) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/admin'
+    return NextResponse.redirect(url)
+  }
+
   return supabaseResponse
 }
