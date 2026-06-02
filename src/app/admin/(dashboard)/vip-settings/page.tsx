@@ -19,7 +19,7 @@ export default function VIPSettingsPage() {
     page_title: 'Become a VIP Member',
     page_description: 'Get the ultimate theGriot.io experience. Gain unlimited access to premium exclusive content, ad-free viewing, and support local creators.',
     pricing_text: '$9.99/month',
-    monthly_price: 9.99,
+    square_plan_id: '',
   });
 
   useEffect(() => {
@@ -158,18 +158,16 @@ export default function VIPSettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Stripe Subscription Price (USD)</label>
+              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Square Subscription Plan ID</label>
               <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={settings.monthly_price}
-                onChange={e => setSettings({...settings, monthly_price: parseFloat(e.target.value) || 0})}
-                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
-                placeholder="9.99"
+                type="text"
+                value={settings.square_plan_id || ''}
+                onChange={e => setSettings({...settings, square_plan_id: e.target.value})}
+                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all font-mono"
+                placeholder="e.g. 5CXXXXXXXXXXXX"
                 required
               />
-              <p className="text-xs text-zinc-500 mt-2">This sets the actual numerical amount charged by Stripe.</p>
+              <p className="text-xs text-zinc-500 mt-2">You must create a Subscription Plan in your Square Dashboard and paste the ID here.</p>
             </div>
           </div>
         </div>

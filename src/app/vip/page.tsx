@@ -72,7 +72,7 @@ export default async function VIPPage() {
             </div>
             <p className="text-gray-400 mb-10 text-sm">Cancel anytime. Billed securely.</p>
 
-            <form action="/api/stripe/checkout" method="POST">
+            <form action="/api/square/checkout" method="POST">
               <Button 
                 type="submit"
                 className="w-full bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white font-black py-8 text-xl rounded-2xl transition-all shadow-xl hover:shadow-pink-500/25 hover:scale-105"

@@ -17,7 +17,7 @@ type UserProfile = {
   role: string;
 };
 
-export function ClientProfile({ userProfile, monthlyPrice = 9.99 }: { userProfile: UserProfile, monthlyPrice?: number }) {
+export function ClientProfile({ userProfile, pricingText = '$9.99/mo' }: { userProfile: UserProfile, pricingText?: string }) {
   const [loading, setLoading] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -253,7 +253,7 @@ export function ClientProfile({ userProfile, monthlyPrice = 9.99 }: { userProfil
           </p>
 
           {!isPremium && (
-            <form action="/api/stripe/checkout" method="POST">
+            <form action="/api/square/checkout" method="POST">
               <Button 
                 type="submit"
                 className="w-full h-auto flex flex-col items-center justify-center bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:scale-[1.02]"
@@ -262,7 +262,7 @@ export function ClientProfile({ userProfile, monthlyPrice = 9.99 }: { userProfil
                   Upgrade to VIP <ChevronRight className="w-4 h-4 ml-1" />
                 </span>
                 <span className="text-xs font-medium text-white/80 mt-1 uppercase tracking-wide">
-                  ${monthlyPrice.toFixed(2)} / Month - Cancel Anytime
+                  {pricingText} - Cancel Anytime
                 </span>
               </Button>
             </form>

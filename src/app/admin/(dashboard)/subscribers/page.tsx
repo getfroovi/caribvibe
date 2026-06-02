@@ -45,23 +45,23 @@ export default async function AdminSubscribersPage() {
           <p className="text-4xl font-black text-white">${(premiumCount * 9.99).toFixed(2)}</p>
           <p className="text-xs text-zinc-500 mt-2">Estimated (assuming $9.99/mo plan)</p>
         </div>
-        <div className="bg-zinc-950/50 border border-white/5 rounded-2xl p-6 backdrop-blur-xl flex flex-col justify-center items-start">
-          <h3 className="text-zinc-400 font-bold text-sm uppercase tracking-wider mb-4">Stripe Dashboard</h3>
-          <Link href="https://dashboard.stripe.com/subscriptions" target="_blank" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm w-full text-center">
-            Manage in Stripe
+        <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 backdrop-blur-xl">
+          <h3 className="text-zinc-400 font-bold text-sm uppercase tracking-wider mb-4">Square Dashboard</h3>
+          <Link href="https://squareup.com/dashboard/sales/subscriptions" target="_blank" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm w-full text-center">
+            Manage in Square
           </Link>
         </div>
       </div>
 
-      <div className="bg-zinc-950/50 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-xl">
+      <div className="bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-zinc-400">
-            <thead className="bg-white/5 text-xs uppercase font-semibold text-zinc-300">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-zinc-400 uppercase bg-black/40 border-b border-white/5">
               <tr>
-                <th className="px-6 py-4">Subscriber</th>
-                <th className="px-6 py-4">Status / Role</th>
-                <th className="px-6 py-4">Stripe ID</th>
-                <th className="px-6 py-4">Member Since</th>
+                <th className="px-6 py-4 font-bold tracking-wider">User</th>
+                <th className="px-6 py-4 font-bold tracking-wider">Role</th>
+                <th className="px-6 py-4 font-bold tracking-wider">Square ID</th>
+                <th className="px-6 py-4 font-bold tracking-wider">Joined</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -100,14 +100,14 @@ export default async function AdminSubscribersPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs">
-                    {user.stripe_customer_id ? (
+                    {user.square_customer_id ? (
                       <a 
-                        href={`https://dashboard.stripe.com/customers/${user.stripe_customer_id}`} 
+                        href={`https://squareup.com/dashboard/customers/directory/${user.square_customer_id}`} 
                         target="_blank" 
                         rel="noreferrer"
-                        className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2"
+                        className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
                       >
-                        {user.stripe_customer_id}
+                        {user.square_customer_id}
                       </a>
                     ) : (
                       <span className="text-zinc-600">Manual / Legacy</span>

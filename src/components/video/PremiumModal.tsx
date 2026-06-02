@@ -37,7 +37,7 @@ export function PremiumModal({ onUnlock }: PremiumModalProps) {
   const handleUnlock = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/stripe/checkout', {
+      const res = await fetch('/api/square/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
