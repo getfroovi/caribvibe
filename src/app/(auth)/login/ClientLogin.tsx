@@ -6,7 +6,7 @@ import { login, signup, resetPassword } from './actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Lock, Mail, Play, Sparkles } from 'lucide-react';
+import { ArrowRight, Lock, Mail, Play, Sparkles, User } from 'lucide-react';
 import Link from 'next/link';
 
 export function ClientLogin({ error, message }: { error?: string, message?: string }) {
@@ -123,15 +123,39 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
                 )}
               </AnimatePresence>
 
+              {isSignUp && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-2 overflow-hidden"
+                >
+                  <Label htmlFor="username" className="text-zinc-300 font-medium">Username</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                    <Input
+                      id="username"
+                      name="username"
+                      type="text"
+                      placeholder="cooluser123"
+                      required={isSignUp}
+                      className="bg-black/50 border-white/10 focus:border-pink-500/50 focus:ring-pink-500/20 text-white pl-10 h-12 rounded-xl transition-all"
+                    />
+                  </div>
+                </motion.div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-zinc-300 font-medium">Email address</Label>
+                <Label htmlFor="email" className="text-zinc-300 font-medium">
+                  {isSignUp || isForgotPassword ? 'Email address' : 'Email or Username'}
+                </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
                   <Input
                     id="email"
                     name="email"
-                    type="email"
-                    placeholder="name@example.com"
+                    type={isSignUp || isForgotPassword ? "email" : "text"}
+                    placeholder={isSignUp || isForgotPassword ? "name@example.com" : "name@example.com or username"}
                     required
                     className="bg-black/50 border-white/10 focus:border-pink-500/50 focus:ring-pink-500/20 text-white pl-10 h-12 rounded-xl transition-all"
                   />

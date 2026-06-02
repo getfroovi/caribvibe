@@ -17,7 +17,7 @@ export default async function ProfilePage() {
   // Fetch the user's profile to get their name and role
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, role')
+    .select('full_name, username, role')
     .eq('id', user.id)
     .single();
 
@@ -25,6 +25,7 @@ export default async function ProfilePage() {
     id: user.id,
     email: user.email || '',
     full_name: profile?.full_name || '',
+    username: profile?.username || '',
     role: profile?.role || 'free',
   };
 

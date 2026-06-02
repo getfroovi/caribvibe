@@ -13,6 +13,7 @@ type UserProfile = {
   id: string;
   email: string;
   full_name: string;
+  username?: string;
   role: string;
 };
 
@@ -91,6 +92,21 @@ export function ClientProfile({ userProfile, monthlyPrice = 9.99 }: { userProfil
                 </motion.div>
               )}
             </AnimatePresence>
+
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-zinc-300">Username</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                <Input
+                  id="username"
+                  name="username"
+                  defaultValue={userProfile.username || ''}
+                  placeholder="cooluser123"
+                  className="bg-black/50 border-white/10 focus:border-pink-500/50 text-white pl-10 h-12 rounded-xl"
+                />
+              </div>
+              <p className="text-xs text-zinc-500 mt-1">This is how you will appear publicly in comments.</p>
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="fullName" className="text-zinc-300">Display Name</Label>

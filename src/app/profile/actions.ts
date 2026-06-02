@@ -7,20 +7,30 @@ import { redirect } from 'next/navigation';
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient();
   const fullName = formData.get('fullName') as string;
+  const username = formData.get('username') as string;
   const email = formData.get('email') as string;
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'Not authenticated' };
 
   try {
-    // 1. Update profiles table full_name
-    if (fullName) {
+    // 1. Update profiles table
+    if (fullName !== undefined || username !== undefined) {
+      const updates: { full_name?: string, username?: string } = {};
+      if (fullName !== undefined) updates.full_name = fullName;
+      if (username !== undefined) updates.username = username || null; // null if empty to avoid unique constraint on empty strings
+
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ full_name: fullName })
+        .update(updates)
         .eq('id', user.id);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        if (profileError.code === '23505') { // Unique violation
+          throw new Error('This username is already taken. Please choose another one.');
+        }
+        throw profileError;
+      }
     }
 
     // 2. Update auth email if changed

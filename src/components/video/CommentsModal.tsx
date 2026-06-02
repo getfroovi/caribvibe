@@ -45,7 +45,7 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
         .from('video_comments')
         .select(`
           id, content, created_at, user_id,
-          profiles (full_name, avatar_url)
+          profiles (full_name, username, avatar_url)
         `)
         .eq('video_id', videoId)
         .order('created_at', { ascending: false });
@@ -84,7 +84,7 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
         })
         .select(`
           id, content, created_at, user_id,
-          profiles (full_name, avatar_url)
+          profiles (full_name, username, avatar_url)
         `)
         .single();
 
@@ -158,7 +158,7 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-sm font-bold text-zinc-300">
-                          {comment.profiles?.full_name || 'Anonymous User'}
+                          {comment.profiles?.username ? `@${comment.profiles.username}` : (comment.profiles?.full_name || 'Anonymous User')}
                         </span>
                         <span className="text-xs text-zinc-500">
                           {new Date(comment.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
