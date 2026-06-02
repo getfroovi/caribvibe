@@ -1,4 +1,4 @@
-import { Video, FileText, Users, LogOut, Layers } from 'lucide-react';
+import { Video, FileText, Users, LogOut, Layers, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
