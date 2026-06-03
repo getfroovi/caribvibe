@@ -141,42 +141,42 @@ export default function AdminVideosPage() {
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
-      <h2 className="text-3xl font-bold mb-6">Episodes Manager</h2>
-      <p className="text-gray-400 mb-8">Upload episodes and attach them to a Series.</p>
+      <h2 className="text-3xl font-black mb-6 text-black tracking-tight">Episodes Manager</h2>
+      <p className="text-gray-500 mb-8">Upload episodes and attach them to a Series.</p>
       
       <div className="flex gap-4 mb-6">
         <Button 
           variant={sourceType === 'external' ? 'default' : 'outline'} 
           onClick={() => setSourceType('external')}
-          className={sourceType === 'external' ? 'bg-pink-600 hover:bg-pink-700' : ''}
+          className={`rounded-none border-black font-bold uppercase tracking-wider ${sourceType === 'external' ? 'bg-black text-white hover:bg-gray-800' : 'bg-transparent text-black hover:bg-gray-100'}`}
         >
           External Link (YouTube/Vimeo)
         </Button>
         <Button 
           variant={sourceType === 'mux' ? 'default' : 'outline'} 
           onClick={() => setSourceType('mux')}
-          className={sourceType === 'mux' ? 'bg-pink-600 hover:bg-pink-700' : ''}
+          className={`rounded-none border-black font-bold uppercase tracking-wider ${sourceType === 'mux' ? 'bg-black text-white hover:bg-gray-800' : 'bg-transparent text-black hover:bg-gray-100'}`}
         >
           Upload to Mux
         </Button>
       </div>
       
       {/* FORM */}
-      <div className="bg-zinc-900 border border-white/10 p-6 rounded-xl space-y-6 mb-12">
-        <h3 className="text-xl font-bold">{editingId ? 'Edit Episode' : 'Add New Episode'}</h3>
+      <div className="bg-white border border-black p-6 rounded-none space-y-6 mb-12">
+        <h3 className="text-xl font-bold text-black uppercase tracking-tight">{editingId ? 'Edit Episode' : 'Add New Episode'}</h3>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label>Episode Title</Label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="E.g., Pilot" className="bg-zinc-800 border-zinc-700" />
+            <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Episode Title</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="E.g., Pilot" className="bg-white border-black text-black rounded-none focus-visible:ring-1 focus-visible:ring-black" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label>Series</Label>
+              <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Series</Label>
               <select 
                 value={seriesId} 
                 onChange={(e) => setSeriesId(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white"
+                className="flex h-10 w-full border border-black bg-white px-3 py-2 text-sm text-black rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black"
               >
                 {seriesList.length === 0 && <option value="">No Series Found</option>}
                 {seriesList.map(s => (
@@ -185,23 +185,23 @@ export default function AdminVideosPage() {
               </select>
             </div>
             <div className="grid gap-2">
-              <Label>Episode Number</Label>
-              <Input type="number" value={episodeNumber} onChange={(e) => setEpisodeNumber(Number(e.target.value))} className="bg-zinc-800 border-zinc-700" />
+              <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Episode Number</Label>
+              <Input type="number" value={episodeNumber} onChange={(e) => setEpisodeNumber(Number(e.target.value))} className="bg-white border-black text-black rounded-none focus-visible:ring-1 focus-visible:ring-black" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label>Preview Duration (seconds)</Label>
-              <Input type="number" value={previewDuration} onChange={(e) => setPreviewDuration(Number(e.target.value))} className="bg-zinc-800 border-zinc-700" />
+              <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Preview Duration (seconds)</Label>
+              <Input type="number" value={previewDuration} onChange={(e) => setPreviewDuration(Number(e.target.value))} className="bg-white border-black text-black rounded-none focus-visible:ring-1 focus-visible:ring-black" />
             </div>
-            <div className="flex items-center gap-2 mt-8">
-              <input type="checkbox" checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} className="w-4 h-4 text-pink-600" />
-              <Label>Require Premium</Label>
+            <div className="flex items-center gap-2 mt-6">
+              <input type="checkbox" checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} className="w-4 h-4 text-black border-black focus:ring-black rounded-none accent-black" />
+              <Label className="text-sm font-bold text-gray-900 uppercase tracking-wider mt-1">Require Premium</Label>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200">
             <ImageUploader 
               label="Episode Poster (9:16)" 
               aspectRatio="9:16" 
@@ -218,24 +218,24 @@ export default function AdminVideosPage() {
 
           {sourceType === 'external' && (
             <>
-              <div className="grid gap-2 border-t border-white/10 pt-4 mt-2">
-                <Label>Platform</Label>
-                <select value={videoType} onChange={(e) => setVideoType(e.target.value)} className="flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white">
+              <div className="grid gap-2 border-t border-gray-200 pt-6 mt-4">
+                <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Platform</Label>
+                <select value={videoType} onChange={(e) => setVideoType(e.target.value)} className="flex h-10 w-full border border-black bg-white px-3 py-2 text-sm text-black rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black">
                   <option value="youtube">YouTube</option>
                   <option value="vimeo">Vimeo</option>
                 </select>
               </div>
               <div className="grid gap-2">
-                <Label>Video URL</Label>
-                <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." className="bg-zinc-800 border-zinc-700" />
+                <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Video URL</Label>
+                <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." className="bg-white border-black text-black rounded-none focus-visible:ring-1 focus-visible:ring-black" />
                 <p className="text-xs text-gray-500">YouTube Shorts links will automatically be converted to standard embed links.</p>
               </div>
-              <div className="flex gap-4 mt-4">
-                <Button onClick={handleSaveExternal} className="flex-1 bg-violet-600 hover:bg-violet-700 text-white" disabled={!seriesId}>
+              <div className="flex gap-4 mt-6">
+                <Button onClick={handleSaveExternal} className="flex-1 bg-black hover:bg-gray-800 text-white rounded-none font-bold uppercase tracking-widest" disabled={!seriesId}>
                   {editingId ? 'Save Changes' : 'Save Episode'}
                 </Button>
                 {editingId && (
-                  <Button onClick={() => { setEditingId(null); setTitle(''); setVideoUrl(''); setThumbnailUrl(''); setPosterUrl(''); }} variant="outline" className="flex-1">
+                  <Button onClick={() => { setEditingId(null); setTitle(''); setVideoUrl(''); setThumbnailUrl(''); setPosterUrl(''); }} variant="outline" className="flex-1 rounded-none border-black text-black hover:bg-gray-100 font-bold uppercase tracking-widest">
                     Cancel Edit
                   </Button>
                 )}
@@ -245,16 +245,16 @@ export default function AdminVideosPage() {
         </div>
 
         {sourceType === 'mux' && (
-          <div className="pt-4 border-t border-white/10">
-            <p className="text-sm text-gray-400 mb-4">Mux uploads will be automatically tagged as 'mux' type.</p>
+          <div className="pt-6 border-t border-gray-200 mt-4">
+            <p className="text-sm text-gray-500 mb-4 font-bold uppercase tracking-wider">Mux uploads will be automatically tagged as 'mux' type.</p>
             {!endpoint ? (
-              <Button onClick={getUploadUrl} className="w-full bg-violet-600 hover:bg-violet-700 text-white">Prepare Upload</Button>
+              <Button onClick={getUploadUrl} className="w-full bg-black hover:bg-gray-800 text-white rounded-none font-bold uppercase tracking-widest">Prepare Upload</Button>
             ) : (
-              <div className="border-2 border-dashed border-zinc-700 rounded-xl p-8 flex flex-col items-center justify-center bg-zinc-800/50">
+              <div className="border border-dashed border-black p-8 flex flex-col items-center justify-center bg-gray-50 rounded-none">
                 <MuxUploader
                   endpoint={endpoint}
                   onSuccess={() => toast.success('Mux upload complete! (Webhook processing)')}
-                  className="w-full max-w-md [--button-background-color:theme(colors.pink.500)] [--button-border-radius:0.5rem]"
+                  className="w-full max-w-md [--button-background-color:theme(colors.black)] [--button-border-radius:0]"
                 />
               </div>
             )}
@@ -264,47 +264,47 @@ export default function AdminVideosPage() {
 
       {/* LIST */}
       <div>
-        <h3 className="text-2xl font-bold mb-6">Uploaded Episodes</h3>
+        <h3 className="text-2xl font-black mb-6 text-black tracking-tight">Uploaded Episodes</h3>
         {videosBySeries.length === 0 && (
-          <div className="text-center py-12 text-gray-500 bg-zinc-900 border border-white/10 rounded-xl">
+          <div className="text-center py-12 text-gray-500 bg-gray-50 border border-dashed border-gray-300 rounded-none font-medium">
             No episodes uploaded yet.
           </div>
         )}
         <div className="space-y-8">
           {videosBySeries.map(series => (
-            <div key={series.id} className="bg-zinc-900/50 border border-white/5 rounded-xl p-6">
-              <div className="flex items-center gap-4 mb-6 border-b border-white/5 pb-4">
+            <div key={series.id} className="bg-white border border-black rounded-none p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="flex items-center gap-4 mb-6 border-b border-gray-200 pb-4">
                 {series.thumbnail_url && (
-                  <img src={series.thumbnail_url} alt="thumbnail" className="w-12 h-16 object-cover rounded shadow" />
+                  <img src={series.thumbnail_url} alt="thumbnail" className="w-12 h-16 object-cover rounded-none border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
                 )}
                 <div>
-                  <h4 className="text-xl font-bold text-white">{series.title}</h4>
-                  <p className="text-sm text-gray-400">{series.episodes.length} Episodes • {series.category}</p>
+                  <h4 className="text-xl font-black text-black uppercase tracking-tight">{series.title}</h4>
+                  <p className="text-sm text-gray-500 font-bold uppercase tracking-wider mt-1">{series.episodes.length} Episodes • {series.category}</p>
                 </div>
               </div>
               
               <div className="space-y-3">
                 {series.episodes.map((ep: any) => (
-                  <div key={ep.id} className="flex items-center justify-between p-4 bg-zinc-900 border border-white/10 rounded-lg">
+                  <div key={ep.id} className="flex items-center justify-between p-4 bg-gray-50 border border-black rounded-none hover:bg-gray-100 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-bold text-gray-400">
+                      <div className="w-8 h-8 rounded-none border border-black bg-white flex items-center justify-center text-sm font-black text-black">
                         {ep.episode_number}
                       </div>
                       <div>
-                        <p className="font-bold text-white flex items-center gap-2">
+                        <p className="font-bold text-black flex items-center gap-2 uppercase tracking-wide">
                           {ep.title} 
-                          {ep.is_premium && <span className="text-[10px] bg-pink-500/20 text-pink-400 px-2 py-0.5 rounded-full uppercase tracking-wider">Premium</span>}
+                          {ep.is_premium && <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-none font-bold uppercase tracking-widest">Premium</span>}
                         </p>
-                        <p className="text-xs text-gray-500 flex items-center gap-2 mt-1">
-                          <Play className="w-3 h-3" /> {ep.video_type} • Prev: {ep.preview_duration_seconds}s
+                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider flex items-center gap-2 mt-1">
+                          <Play className="w-3 h-3 text-black" /> {ep.video_type} • Prev: {ep.preview_duration_seconds}s
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button onClick={() => handleEdit(ep)} variant="secondary" size="sm" className="h-8">
+                      <Button onClick={() => handleEdit(ep)} variant="outline" size="sm" className="h-8 rounded-none border-black hover:bg-gray-200 text-black">
                         <Edit2 className="w-4 h-4" />
                       </Button>
-                      <Button onClick={() => handleDelete(ep.id)} variant="destructive" size="sm" className="h-8">
+                      <Button onClick={() => handleDelete(ep.id)} variant="outline" size="sm" className="h-8 rounded-none border-red-500 hover:bg-red-50 text-red-500 hover:text-red-600">
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>

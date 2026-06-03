@@ -103,14 +103,14 @@ export default function HeroSliderSettingsPage() {
     <div className="max-w-5xl mx-auto pb-20">
       <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">Hero Slider Management</h1>
-          <p className="text-sm text-zinc-400 mt-1">Configure the rotating banners on the homepage.</p>
+          <h1 className="text-3xl font-black tracking-tight text-black">Hero Slider Management</h1>
+          <p className="text-sm text-gray-500 mt-1 font-bold uppercase tracking-wider">Configure the rotating banners on the homepage.</p>
         </div>
         <div className="flex gap-4">
-          <Button onClick={addSlide} className="bg-white/10 hover:bg-white/20 text-white border-0 rounded-xl px-4 py-6 font-medium transition-all">
+          <Button onClick={addSlide} className="bg-white hover:bg-gray-100 text-black border border-black rounded-none px-4 py-6 font-bold uppercase tracking-widest transition-all">
             <Plus className="w-4 h-4 mr-2" /> Add Slide
           </Button>
-          <Button onClick={handleSave} disabled={saving} className="bg-white text-black hover:bg-zinc-200 rounded-xl px-6 py-6 font-semibold transition-all">
+          <Button onClick={handleSave} disabled={saving} className="bg-black text-white hover:bg-gray-800 rounded-none px-6 py-6 font-black uppercase tracking-widest transition-all border border-transparent">
             <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
@@ -118,18 +118,18 @@ export default function HeroSliderSettingsPage() {
       
       <div className="space-y-6">
         {slides.length === 0 && (
-          <div className="text-center p-16 border border-dashed border-white/10 rounded-2xl text-zinc-500 bg-zinc-900/20">
+          <div className="text-center p-16 border border-dashed border-gray-300 rounded-none text-gray-500 bg-gray-50 font-bold uppercase tracking-wider">
             No slides configured. Add a slide to feature content on the homepage!
           </div>
         )}
 
         {slides.map((slide, index) => (
-          <div key={slide.id} className="bg-zinc-900/40 border border-white/5 rounded-2xl p-8 relative group transition-colors hover:border-white/10">
+          <div key={slide.id} className="bg-white border border-black rounded-none p-8 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1">
             <div className="absolute top-6 right-6 flex items-center gap-3">
-              <div className="px-3 py-1 bg-black/50 rounded-full border border-white/5">
-                <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Order: {slide.order_index}</span>
+              <div className="px-3 py-1 bg-gray-100 rounded-none border border-black">
+                <span className="text-[10px] text-black uppercase tracking-widest font-black">Order: {slide.order_index}</span>
               </div>
-              <button onClick={() => removeSlide(index)} className="p-2 text-zinc-500 hover:text-red-400 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+              <button onClick={() => removeSlide(index)} className="p-2 text-red-500 hover:text-white bg-white border border-red-500 rounded-none hover:bg-red-500 transition-colors">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
@@ -137,59 +137,59 @@ export default function HeroSliderSettingsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Title</label>
+                  <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Title</label>
                   <input
                     type="text"
                     value={slide.title}
                     onChange={e => updateSlide(index, 'title', e.target.value)}
-                    className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                    className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Description</label>
+                  <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Description</label>
                   <textarea
                     value={slide.description || ''}
                     onChange={e => updateSlide(index, 'description', e.target.value)}
-                    className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all h-24 resize-none"
+                    className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all h-24 resize-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Button Text</label>
+                  <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Button Text</label>
                   <input
                     type="text"
                     value={slide.button_text}
                     onChange={e => updateSlide(index, 'button_text', e.target.value)}
-                    className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                    className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Image / Poster URL</label>
+                  <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Image / Poster URL</label>
                   <input
                     type="url"
                     value={slide.image_url}
                     onChange={e => updateSlide(index, 'image_url', e.target.value)}
-                    className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                    className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                     placeholder="https://..."
                     required
                   />
                 </div>
                 
-                <div className="p-6 bg-zinc-950/50 rounded-xl border border-white/5 space-y-5">
+                <div className="p-6 bg-gray-50 rounded-none border border-black space-y-5">
                   <div>
-                    <h3 className="text-sm font-medium text-white">Link Routing</h3>
-                    <p className="text-xs text-zinc-500 mt-1">Select a Series OR provide a custom Webpage URL. If both are set, Series is prioritized.</p>
+                    <h3 className="text-sm font-black text-black uppercase tracking-tight">Link Routing</h3>
+                    <p className="text-xs text-gray-500 mt-1 font-bold uppercase tracking-wider">Select a Series OR provide a custom Webpage URL. If both are set, Series is prioritized.</p>
                   </div>
                   
                   <div>
-                    <label className="block text-[10px] font-semibold text-zinc-500 mb-2 uppercase tracking-wider">Link to Series</label>
+                    <label className="block text-[10px] font-black text-gray-500 mb-2 uppercase tracking-widest">Link to Series</label>
                     <select
                       value={slide.series_id || ''}
                       onChange={e => updateSlide(index, 'series_id', e.target.value || null)}
-                      className="w-full bg-black border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-white/20 transition-all appearance-none"
+                      className="w-full bg-white border border-black rounded-none px-3 py-2.5 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all appearance-none"
                     >
                       <option value="">-- No Series (Use Webpage URL) --</option>
                       {seriesList.map(s => (
@@ -200,18 +200,18 @@ export default function HeroSliderSettingsPage() {
 
                   {!slide.series_id && (
                     <div>
-                      <label className="block text-[10px] font-semibold text-zinc-500 mb-2 uppercase tracking-wider">Custom Webpage URL</label>
+                      <label className="block text-[10px] font-black text-gray-500 mb-2 uppercase tracking-widest">Custom Webpage URL</label>
                       <input
                         type="text"
                         value={slide.link_url || ''}
                         onChange={e => updateSlide(index, 'link_url', e.target.value)}
-                        className="w-full bg-black border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                        className="w-full bg-white border border-black rounded-none px-3 py-2.5 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                         placeholder="/magazine or https://google.com"
                       />
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-white/5">
+                  <div className="pt-4 border-t border-black">
                     <label className="flex items-center gap-3 cursor-pointer group">
                       <div className="relative">
                         <input 
@@ -220,22 +220,22 @@ export default function HeroSliderSettingsPage() {
                           onChange={(e) => updateSlide(index, 'is_trailer', e.target.checked)}
                           className="sr-only" 
                         />
-                        <div className={`block w-10 h-6 rounded-full transition-colors ${slide.is_trailer ? 'bg-pink-500' : 'bg-zinc-800'}`}></div>
-                        <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${slide.is_trailer ? 'transform translate-x-4' : ''}`}></div>
+                        <div className={`block w-10 h-6 rounded-none border border-black transition-colors ${slide.is_trailer ? 'bg-black' : 'bg-white'}`}></div>
+                        <div className={`dot absolute left-1 top-1 w-4 h-4 rounded-none border border-black transition-transform ${slide.is_trailer ? 'transform translate-x-4 bg-white' : 'bg-black'}`}></div>
                       </div>
-                      <span className="text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">Is this a Trailer?</span>
+                      <span className="text-sm font-black text-gray-500 group-hover:text-black uppercase tracking-wider transition-colors">Is this a Trailer?</span>
                     </label>
-                    <p className="text-xs text-zinc-500 mt-2">If checked, the button will play a trailer video in a popup modal.</p>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-2">If checked, the button will play a trailer video in a popup modal.</p>
                   </div>
 
                   {slide.is_trailer && (
                     <div className="mt-4">
-                      <label className="block text-[10px] font-semibold text-zinc-500 mb-2 uppercase tracking-wider">Trailer Video URL</label>
+                      <label className="block text-[10px] font-black text-gray-500 mb-2 uppercase tracking-widest">Trailer Video URL</label>
                       <input
                         type="text"
                         value={slide.trailer_url || ''}
                         onChange={e => updateSlide(index, 'trailer_url', e.target.value)}
-                        className="w-full bg-black border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                        className="w-full bg-white border border-black rounded-none px-3 py-2.5 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                         placeholder="YouTube link or .mp4 URL"
                       />
                     </div>
@@ -245,10 +245,10 @@ export default function HeroSliderSettingsPage() {
             </div>
             
             {slide.image_url && (
-              <div className="mt-8 aspect-[21/9] md:aspect-[4/1] rounded-xl overflow-hidden relative border border-white/5 group-hover:border-white/10 transition-colors">
+              <div className="mt-8 aspect-[21/9] md:aspect-[4/1] rounded-none overflow-hidden relative border border-black group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
                 <img src={slide.image_url} alt="Preview" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                  <span className="text-white text-sm font-medium tracking-wide">Image Preview</span>
+                <div className="absolute inset-0 bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                  <span className="text-black text-sm font-black tracking-widest uppercase">Image Preview</span>
                 </div>
               </div>
             )}

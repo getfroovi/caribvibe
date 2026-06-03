@@ -22,57 +22,57 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-white">
+    <div className="flex h-screen bg-gray-50 text-gray-900 font-sans">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/5 bg-zinc-950/50 p-6 flex flex-col h-full backdrop-blur-xl">
+      <aside className="w-64 border-r border-gray-200 bg-white p-6 flex flex-col h-full">
         <div className="mb-10 px-2">
-          <h1 className="text-xl font-black bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent tracking-tighter">
-            theGriot.io <span className="text-pink-500 font-normal">Admin</span>
+          <h1 className="text-xl font-bold tracking-tight text-black">
+            theGriot.io <span className="font-normal text-gray-500">Admin</span>
           </h1>
         </div>
         
         <nav className="space-y-1 flex-1">
-          <Link href="/admin/series" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/series" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
             <Layers className="w-4 h-4" />
             Series
           </Link>
-          <Link href="/admin/videos" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/videos" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
             <Video className="w-4 h-4" />
             Episodes
           </Link>
-          <Link href="/admin/blog" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/blog" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
             <FileText className="w-4 h-4" />
             Blog & Timeline
           </Link>
-          <Link href="/admin/subscribers" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/subscribers" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
             <Users className="w-4 h-4" />
             Subscribers
           </Link>
-          <Link href="/admin/users" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/users" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
             <ShieldCheck className="w-4 h-4" />
             Admins
           </Link>
           
-          <div className="pt-6 pb-2 px-3">
-            <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Settings</p>
+          <div className="pt-8 pb-3 px-3">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Settings</p>
           </div>
           
-          <Link href="/admin/vip-settings" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/vip-settings" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
             <Layers className="w-4 h-4" />
             VIP Rules
           </Link>
-          <Link href="/admin/ad-settings" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
-            <span className="w-4 h-4 flex items-center justify-center font-bold text-[10px] border border-current rounded-sm">Ad</span>
+          <Link href="/admin/ad-settings" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
+            <span className="w-4 h-4 flex items-center justify-center font-bold text-[10px] border border-current rounded-none">Ad</span>
             Ad Monetization
           </Link>
-          <Link href="/admin/hero-slider" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+          <Link href="/admin/hero-slider" className="flex items-center gap-3 text-sm text-gray-600 hover:text-black hover:bg-gray-100 px-3 py-2.5 transition-colors rounded-none">
             <Video className="w-4 h-4" />
             Hero Slider
           </Link>
         </nav>
 
         <form action="/auth/signout" method="post" className="mt-auto px-2">
-          <button className="flex items-center gap-3 text-sm text-zinc-500 hover:text-red-400 transition-colors w-full group">
+          <button className="flex items-center gap-3 text-sm text-gray-500 hover:text-black transition-colors w-full group">
             <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Sign Out
           </button>
@@ -80,7 +80,7 @@ export default async function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-8">
+      <main className="flex-1 overflow-y-auto p-8 bg-gray-50">
         {children}
       </main>
     </div>

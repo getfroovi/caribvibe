@@ -80,34 +80,34 @@ export default function AdminSeriesPage() {
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
-      <h2 className="text-3xl font-bold mb-6">Series Manager</h2>
-      <p className="text-gray-400 mb-8">Create and manage your Series here. Once created, attach Episodes to them from the Video Manager.</p>
+      <h2 className="text-3xl font-black mb-6 text-black tracking-tight">Series Manager</h2>
+      <p className="text-gray-500 mb-8">Create and manage your Series here. Once created, attach Episodes to them from the Video Manager.</p>
 
       {/* Form */}
-      <div className="bg-zinc-900 border border-white/10 p-6 rounded-xl space-y-6 mb-12">
-        <h3 className="text-xl font-bold">{editingId ? 'Edit Series' : 'Create New Series'}</h3>
+      <div className="bg-white border border-black p-6 rounded-none space-y-6 mb-12">
+        <h3 className="text-xl font-bold text-black uppercase tracking-tight">{editingId ? 'Edit Series' : 'Create New Series'}</h3>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label>Series Title</Label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="E.g., Island Whispers" className="bg-zinc-800 border-zinc-700" />
+            <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Series Title</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="E.g., Island Whispers" className="bg-white border-black text-black rounded-none focus-visible:ring-1 focus-visible:ring-black" />
           </div>
 
           <div className="grid gap-2">
-            <Label>Description</Label>
+            <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Description</Label>
             <textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
-              className="flex min-h-[80px] w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-300"
+              className="flex min-h-[80px] w-full border border-black bg-white px-3 py-2 text-sm text-black placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black rounded-none"
               placeholder="Synopsis of the series..."
             />
           </div>
 
           <div className="grid gap-2">
-            <Label>Homepage Category</Label>
+            <Label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Homepage Category</Label>
             <select 
               value={category} 
               onChange={(e) => setCategory(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white"
+              className="flex h-10 w-full border border-black bg-white px-3 py-2 text-sm text-black rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black"
             >
               <option value="Trending Now">Trending Now</option>
               <option value="New Releases">New Releases</option>
@@ -115,7 +115,7 @@ export default function AdminSeriesPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200">
             <ImageUploader 
               label="Vertical Poster (9:16)" 
               aspectRatio="9:16" 
@@ -130,12 +130,12 @@ export default function AdminSeriesPage() {
             />
           </div>
 
-          <div className="flex gap-4 mt-4">
-            <Button onClick={handleSaveSeries} className="flex-1 bg-violet-600 hover:bg-violet-700 text-white">
+          <div className="flex gap-4 mt-6">
+            <Button onClick={handleSaveSeries} className="flex-1 bg-black hover:bg-gray-800 text-white rounded-none font-bold uppercase tracking-widest">
               {editingId ? 'Save Changes' : 'Create Series'}
             </Button>
             {editingId && (
-              <Button onClick={() => { setEditingId(null); setTitle(''); setDescription(''); setThumbnailUrl(''); setPosterUrl(''); }} variant="outline" className="flex-1">
+              <Button onClick={() => { setEditingId(null); setTitle(''); setDescription(''); setThumbnailUrl(''); setPosterUrl(''); }} variant="outline" className="flex-1 rounded-none border-black text-black hover:bg-gray-100 font-bold uppercase tracking-widest">
                 Cancel Edit
               </Button>
             )}
@@ -145,36 +145,36 @@ export default function AdminSeriesPage() {
 
       {/* List */}
       <div>
-        <h3 className="text-2xl font-bold mb-6">Existing Series</h3>
+        <h3 className="text-2xl font-black mb-6 text-black tracking-tight">Existing Series</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {seriesList.map((s) => (
-            <div key={s.id} className="bg-zinc-900 border border-white/10 rounded-xl overflow-hidden flex flex-col">
-              <div className="h-48 bg-zinc-800 relative">
+            <div key={s.id} className="bg-white border border-black rounded-none overflow-hidden flex flex-col transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="h-48 bg-gray-100 relative border-b border-black">
                 {s.poster_url || s.thumbnail_url ? (
                   <img src={s.poster_url || s.thumbnail_url} alt={s.title} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm">No Poster</div>
+                  <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm font-bold uppercase">No Poster</div>
                 )}
-                <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-xs px-2 py-1 rounded text-white border border-white/10">
+                <div className="absolute top-2 right-2 bg-black text-xs px-2 py-1 rounded-none text-white font-bold uppercase tracking-wider border border-transparent">
                   {s.category}
                 </div>
               </div>
               <div className="p-4 flex-1 flex flex-col">
-                <h4 className="font-bold text-lg mb-1">{s.title}</h4>
-                <p className="text-sm text-gray-400 line-clamp-2 mb-4 flex-1">{s.description}</p>
+                <h4 className="font-black text-lg mb-1 text-black">{s.title}</h4>
+                <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-1">{s.description}</p>
                 <div className="flex items-center gap-2 mt-auto">
-                  <Button onClick={() => handleEdit(s)} variant="secondary" size="sm" className="flex-1">
-                    <Edit2 className="w-4 h-4 mr-2" /> Edit
+                  <Button onClick={() => handleEdit(s)} variant="outline" size="sm" className="flex-1 rounded-none border-black text-black hover:bg-gray-100 font-bold uppercase tracking-wider text-[10px]">
+                    <Edit2 className="w-3 h-3 mr-2" /> Edit
                   </Button>
-                  <Button onClick={() => handleDelete(s.id)} variant="destructive" size="sm" className="flex-1">
-                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                  <Button onClick={() => handleDelete(s.id)} variant="outline" size="sm" className="flex-1 rounded-none border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 font-bold uppercase tracking-wider text-[10px]">
+                    <Trash2 className="w-3 h-3 mr-2" /> Delete
                   </Button>
                 </div>
               </div>
             </div>
           ))}
           {seriesList.length === 0 && (
-            <div className="col-span-full text-center py-12 text-gray-500 bg-zinc-900 border border-white/10 rounded-xl">
+            <div className="col-span-full text-center py-12 text-gray-500 bg-gray-50 border border-dashed border-gray-300 rounded-none font-medium">
               No series found. Create one above!
             </div>
           )}

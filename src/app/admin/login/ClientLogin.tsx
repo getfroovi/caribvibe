@@ -13,12 +13,9 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
   const [loading, setLoading] = useState(false);
 
   return (
-    <div className="flex h-screen w-full bg-zinc-950 overflow-hidden relative items-center justify-center">
+    <div className="flex h-screen w-full bg-white overflow-hidden relative items-center justify-center">
       {/* Minimalistic Admin Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full bg-blue-900/10 blur-[120px] mix-blend-screen opacity-50 pointer-events-none" />
-        <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-violet-900/10 blur-[120px] mix-blend-screen opacity-50 pointer-events-none" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+      <div className="absolute inset-0 z-0 bg-gray-50">
       </div>
 
       <motion.div 
@@ -29,22 +26,19 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
       >
         <div className="flex justify-center mb-8">
           <Link href="/">
-            <img src="/logo.png" alt="theGriot.io" className="h-12 w-auto object-contain drop-shadow-2xl grayscale hover:grayscale-0 transition-all duration-500" />
+            <img src="/logo.png" alt="theGriot.io" className="h-12 w-auto object-contain filter invert drop-shadow-sm transition-all duration-500" />
           </Link>
         </div>
 
-        <div className="bg-zinc-900/80 backdrop-blur-3xl p-8 lg:p-10 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden">
-          {/* Glossy top highlight */}
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
+        <div className="bg-white p-8 lg:p-10 rounded-none border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
           <div className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 mb-4 shadow-inner">
-              <ShieldAlert className="w-6 h-6 text-zinc-400" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-none bg-gray-100 border border-black mb-4">
+              <ShieldAlert className="w-6 h-6 text-black" />
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight mb-2">
+            <h2 className="text-2xl font-black text-black tracking-tight mb-2 uppercase">
               Admin Portal
             </h2>
-            <p className="text-zinc-500 text-sm">
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">
               Restricted access. Authorized personnel only.
             </p>
           </div>
@@ -56,7 +50,7 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
                   initial={{ opacity: 0, height: 0 }} 
                   animate={{ opacity: 1, height: 'auto' }} 
                   exit={{ opacity: 0, height: 0 }}
-                  className="bg-red-500/10 text-red-400 p-3 rounded-lg text-sm border border-red-500/20 font-medium text-center"
+                  className="bg-red-50 text-red-600 p-3 rounded-none text-xs border border-black font-bold uppercase tracking-wider text-center"
                 >
                   {error}
                 </motion.div>
@@ -66,7 +60,7 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
                   initial={{ opacity: 0, height: 0 }} 
                   animate={{ opacity: 1, height: 'auto' }} 
                   exit={{ opacity: 0, height: 0 }}
-                  className="bg-green-500/10 text-green-400 p-3 rounded-lg text-sm border border-green-500/20 font-medium text-center"
+                  className="bg-green-50 text-green-600 p-3 rounded-none text-xs border border-black font-bold uppercase tracking-wider text-center"
                 >
                   {message}
                 </motion.div>
@@ -74,31 +68,31 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
             </AnimatePresence>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Admin Email</Label>
+              <Label htmlFor="email" className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Admin Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   placeholder="admin@example.com"
                   required
-                  className="bg-zinc-950/50 border-white/5 focus:border-white/20 focus:ring-0 text-white pl-10 h-12 rounded-lg transition-all shadow-inner"
+                  className="bg-white border-black focus:border-black focus:ring-1 focus:ring-black text-black pl-10 h-12 rounded-none transition-all"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Password</Label>
+              <Label htmlFor="password" className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
                 <Input 
                   id="password" 
                   name="password" 
                   type="password" 
                   placeholder="••••••••"
                   required 
-                  className="bg-zinc-950/50 border-white/5 focus:border-white/20 focus:ring-0 text-white pl-10 h-12 rounded-lg transition-all shadow-inner" 
+                  className="bg-white border-black focus:border-black focus:ring-1 focus:ring-black text-black pl-10 h-12 rounded-none transition-all" 
                 />
               </div>
             </div>
@@ -106,10 +100,10 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
             <Button 
               type="submit" 
               disabled={loading}
-              className="w-full h-12 bg-white hover:bg-zinc-200 text-black rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 group mt-4"
+              className="w-full h-12 bg-black hover:bg-gray-800 text-white rounded-none font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 group mt-4 border border-transparent"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   Authenticate
@@ -119,10 +113,10 @@ export function ClientLogin({ error, message }: { error?: string, message?: stri
             </Button>
           </form>
 
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
-            <p className="text-xs text-zinc-600">
+          <div className="mt-8 text-center border-t border-black pt-6">
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
               Not an administrator?{' '}
-              <Link href="/login" className="text-zinc-400 font-medium hover:text-white transition-colors underline decoration-white/20 underline-offset-4">
+              <Link href="/login" className="text-black font-black hover:text-gray-700 transition-colors underline decoration-black underline-offset-4">
                 User Login
               </Link>
             </p>

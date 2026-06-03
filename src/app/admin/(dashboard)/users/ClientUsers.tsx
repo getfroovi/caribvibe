@@ -50,40 +50,40 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
   return (
     <div className="space-y-8">
       {/* Create Admin Form */}
-      <div className="bg-zinc-950/50 border border-white/5 rounded-2xl p-6 backdrop-blur-xl">
-        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-amber-500" />
+      <div className="bg-white border border-black rounded-none p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h3 className="text-lg font-black text-black uppercase tracking-tight mb-4 flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-black" />
           Create Administrator
         </h3>
         <form action={handleCreateAdmin} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-400 uppercase">Display Name</label>
-            <input name="name" required placeholder="Admin Name" className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" />
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Display Name</label>
+            <input name="name" required placeholder="Admin Name" className="w-full bg-white border border-black rounded-none px-3 py-2 text-sm text-black focus:border-black focus:ring-1 focus:ring-black outline-none transition-all" />
           </div>
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-400 uppercase">Email</label>
-            <input name="email" type="email" required placeholder="admin@example.com" className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" />
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Email</label>
+            <input name="email" type="email" required placeholder="admin@example.com" className="w-full bg-white border border-black rounded-none px-3 py-2 text-sm text-black focus:border-black focus:ring-1 focus:ring-black outline-none transition-all" />
           </div>
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-400 uppercase">Password</label>
-            <input name="password" type="password" required placeholder="Min 6 chars" className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all" />
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Password</label>
+            <input name="password" type="password" required placeholder="Min 6 chars" className="w-full bg-white border border-black rounded-none px-3 py-2 text-sm text-black focus:border-black focus:ring-1 focus:ring-black outline-none transition-all" />
           </div>
-          <Button type="submit" disabled={loadingId === 'create'} className="bg-amber-500 hover:bg-amber-600 text-black font-bold h-[38px]">
+          <Button type="submit" disabled={loadingId === 'create'} className="bg-black hover:bg-gray-800 text-white font-bold h-[38px] rounded-none uppercase tracking-widest text-xs border border-transparent">
             {loadingId === 'create' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Admin'}
           </Button>
         </form>
       </div>
 
-      <div className="bg-zinc-950/50 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-xl">
+      <div className="bg-white border border-black rounded-none overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         {error && (
-          <div className="p-4 bg-red-500/10 border-b border-red-500/20 text-red-400 text-sm font-medium">
+          <div className="p-4 bg-red-50 border-b border-black text-red-600 text-sm font-bold uppercase tracking-wider">
             {error}
           </div>
         )}
       
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-zinc-400">
-          <thead className="bg-white/5 text-xs uppercase font-semibold text-zinc-300">
+        <table className="w-full text-left text-sm text-black">
+          <thead className="bg-gray-50 text-[10px] uppercase font-bold text-gray-500 border-b border-black tracking-widest">
             <tr>
               <th className="px-6 py-4">User</th>
               <th className="px-6 py-4">Current Role</th>
@@ -91,35 +91,35 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-gray-200">
             {users.map((user, index) => (
               <motion.tr 
                 key={user.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="hover:bg-white/5 transition-colors"
+                className="hover:bg-gray-50 transition-colors"
               >
-                <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden border border-white/10">
+                <td className="px-6 py-4 font-bold text-black flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-none bg-gray-100 flex items-center justify-center overflow-hidden border border-black">
                     {user.avatar_url ? (
                       <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <UserIcon className="w-4 h-4 text-zinc-500" />
+                      <UserIcon className="w-4 h-4 text-gray-500" />
                     )}
                   </div>
                   <div>
-                    <div>{user.full_name || 'Anonymous User'}</div>
-                    <div className="text-xs text-zinc-500 font-normal font-mono mt-0.5">{user.id.slice(0, 8)}...</div>
+                    <div className="uppercase tracking-wide">{user.full_name || 'Anonymous User'}</div>
+                    <div className="text-[10px] text-gray-500 font-bold font-mono mt-0.5">{user.id.slice(0, 8)}...</div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none text-[10px] font-black uppercase tracking-widest border ${
                     user.role === 'admin' 
-                      ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' 
+                      ? 'bg-black text-white border-black' 
                       : user.role === 'premium'
-                      ? 'bg-pink-500/10 text-pink-500 border border-pink-500/20'
-                      : 'bg-zinc-800 text-zinc-300 border border-white/10'
+                      ? 'bg-gray-100 text-black border-black'
+                      : 'bg-white text-gray-500 border-gray-300'
                   }`}>
                     {user.role === 'admin' && <ShieldAlert className="w-3 h-3" />}
                     {user.role === 'premium' && <ShieldCheck className="w-3 h-3" />}
@@ -127,13 +127,13 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
                     {(user.role || 'free').toUpperCase()}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap text-xs font-bold uppercase tracking-wider text-black">
                   {new Date(user.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 text-right">
                   {loadingId === user.id ? (
                     <div className="flex justify-end pr-4">
-                      <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
+                      <Loader2 className="w-4 h-4 animate-spin text-black" />
                     </div>
                   ) : (
                     <div className="flex justify-end gap-2">
@@ -142,7 +142,7 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
                           onClick={() => handleRoleChange(user.id, 'admin')}
                           variant="outline" 
                           size="sm"
-                          className="bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20 hover:text-amber-400"
+                          className="rounded-none border-black text-black hover:bg-gray-100 font-bold uppercase tracking-widest text-[10px]"
                         >
                           Make Admin
                         </Button>
@@ -151,7 +151,7 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
                           onClick={() => handleRoleChange(user.id, 'free')}
                           variant="outline" 
                           size="sm"
-                          className="bg-zinc-800 border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white"
+                          className="rounded-none border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-black hover:border-black font-bold uppercase tracking-widest text-[10px]"
                         >
                           Revoke Admin
                         </Button>
@@ -164,7 +164,7 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
             
             {users.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-zinc-500">
+                <td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-bold uppercase tracking-widest bg-gray-50">
                   No users found in the database.
                 </td>
               </tr>

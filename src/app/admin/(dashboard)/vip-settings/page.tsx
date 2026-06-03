@@ -87,34 +87,34 @@ export default function VIPSettingsPage() {
   return (
     <div className="max-w-4xl mx-auto pb-20">
       <div className="mb-10">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">VIP Configuration</h1>
-        <p className="text-sm text-zinc-400 mt-1">Manage the paywall modal and the dedicated VIP sign-up landing page.</p>
+        <h1 className="text-3xl font-black tracking-tight text-black">VIP Configuration</h1>
+        <p className="text-sm text-gray-500 mt-1 font-bold uppercase tracking-wider">Manage the paywall modal and the dedicated VIP sign-up landing page.</p>
       </div>
       
       <form onSubmit={handleSave} className="space-y-8">
         
         {/* VIP Modal Settings */}
-        <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-8 transition-colors hover:border-white/10">
-          <h2 className="text-lg font-medium mb-1 text-white flex items-center gap-2">Video Player Modal</h2>
-          <p className="text-sm text-zinc-500 mb-6">Appears when a user hits the paywall on a premium video.</p>
+        <div className="bg-white border border-black rounded-none p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h2 className="text-lg font-black mb-1 text-black flex items-center gap-2 uppercase tracking-tight">Video Player Modal</h2>
+          <p className="text-sm text-gray-500 mb-6 font-bold uppercase tracking-wider">Appears when a user hits the paywall on a premium video.</p>
           
           <div className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Modal Title</label>
+              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Modal Title</label>
               <input
                 type="text"
                 value={settings.modal_title}
                 onChange={e => setSettings({...settings, modal_title: e.target.value})}
-                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Modal Description</label>
+              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Modal Description</label>
               <textarea
                 value={settings.modal_description}
                 onChange={e => setSettings({...settings, modal_description: e.target.value})}
-                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all h-24 resize-none"
+                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all h-24 resize-none"
                 required
               />
             </div>
@@ -122,64 +122,64 @@ export default function VIPSettingsPage() {
         </div>
 
         {/* VIP Sign-Up Page Settings */}
-        <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-8 transition-colors hover:border-white/10">
-          <h2 className="text-lg font-medium mb-1 text-white flex items-center gap-2">VIP Sign-Up Page</h2>
-          <p className="text-sm text-zinc-500 mb-6">The dedicated /vip landing page.</p>
+        <div className="bg-white border border-black rounded-none p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h2 className="text-lg font-black mb-1 text-black flex items-center gap-2 uppercase tracking-tight">VIP Sign-Up Page</h2>
+          <p className="text-sm text-gray-500 mb-6 font-bold uppercase tracking-wider">The dedicated /vip landing page.</p>
           
           <div className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Page Title</label>
+              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Page Title</label>
               <input
                 type="text"
                 value={settings.page_title}
                 onChange={e => setSettings({...settings, page_title: e.target.value})}
-                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Page Description</label>
+              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Page Description</label>
               <textarea
                 value={settings.page_description}
                 onChange={e => setSettings({...settings, page_description: e.target.value})}
-                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all h-24 resize-none"
+                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all h-24 resize-none"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Pricing Text</label>
+              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Pricing Text</label>
               <input
                 type="text"
                 value={settings.pricing_text}
                 onChange={e => setSettings({...settings, pricing_text: e.target.value})}
-                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                 placeholder="e.g. $9.99/mo"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2 uppercase tracking-wider">Square Subscription Plan ID</label>
+              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Square Subscription Plan ID</label>
               <input
                 type="text"
                 value={settings.square_plan_id || ''}
                 onChange={e => setSettings({...settings, square_plan_id: e.target.value})}
-                className="w-full bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all font-mono"
+                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all font-mono"
                 placeholder="e.g. 5CXXXXXXXXXXXX"
                 required
               />
-              <p className="text-xs text-zinc-500 mt-2">You must create a Subscription Plan in your Square Dashboard and paste the ID here.</p>
+              <p className="text-xs text-gray-500 mt-2 font-bold uppercase tracking-wider">You must create a Subscription Plan in your Square Dashboard and paste the ID here.</p>
             </div>
           </div>
         </div>
 
         {/* Benefits List */}
-        <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-8 transition-colors hover:border-white/10">
+        <div className="bg-white border border-black rounded-none p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-lg font-medium text-white">VIP Benefits</h2>
-              <p className="text-sm text-zinc-500 mt-1">Displayed on both the Modal and the Sign-Up page.</p>
+              <h2 className="text-lg font-black text-black uppercase tracking-tight">VIP Benefits</h2>
+              <p className="text-sm text-gray-500 mt-1 font-bold uppercase tracking-wider">Displayed on both the Modal and the Sign-Up page.</p>
             </div>
-            <Button type="button" variant="outline" onClick={addBenefit} className="bg-white text-black hover:bg-zinc-200 border-0 rounded-lg text-sm font-medium">
+            <Button type="button" variant="outline" onClick={addBenefit} className="bg-white text-black hover:bg-gray-100 border border-black rounded-none text-[10px] font-bold uppercase tracking-widest">
               <Plus className="w-4 h-4 mr-2" /> Add Benefit
             </Button>
           </div>
@@ -191,20 +191,20 @@ export default function VIPSettingsPage() {
                   type="text"
                   value={benefit}
                   onChange={e => updateBenefit(index, e.target.value)}
-                  className="flex-1 bg-zinc-950/50 border border-white/5 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                  className="flex-1 bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                   required
                 />
                 <button 
                   type="button" 
                   onClick={() => removeBenefit(index)}
-                  className="p-3 text-zinc-500 hover:text-red-400 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                  className="p-3 text-red-500 hover:text-white bg-white border border-red-500 rounded-none hover:bg-red-500 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
             {settings.benefits.length === 0 && (
-              <p className="text-zinc-600 text-sm italic">No benefits added. Add some to display to users.</p>
+              <p className="text-gray-500 text-sm font-bold uppercase tracking-wider">No benefits added. Add some to display to users.</p>
             )}
           </div>
         </div>
@@ -213,7 +213,7 @@ export default function VIPSettingsPage() {
           <Button 
             type="submit" 
             disabled={saving}
-            className="bg-white text-black hover:bg-zinc-200 font-semibold px-8 py-6 rounded-xl transition-all"
+            className="bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest px-8 py-6 rounded-none transition-all border border-transparent"
           >
             {saving ? 'Saving...' : 'Save Settings'}
           </Button>
