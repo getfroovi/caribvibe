@@ -50,40 +50,40 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
   return (
     <div className="space-y-8">
       {/* Create Admin Form */}
-      <div className="bg-white border border-black rounded-none p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="text-lg font-black text-black uppercase tracking-tight mb-4 flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-black" />
+      <div className="bg-white border border-slate-200 rounded-none p-6 shadow-sm">
+        <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight mb-4 flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-violet-600" />
           Create Administrator
         </h3>
         <form action={handleCreateAdmin} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Display Name</label>
-            <input name="name" required placeholder="Admin Name" className="w-full bg-white border border-black rounded-none px-3 py-2 text-sm text-black focus:border-black focus:ring-1 focus:ring-black outline-none transition-all" />
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Display Name</label>
+            <input name="name" required placeholder="Admin Name" className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2 text-sm text-slate-900 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none transition-all" />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Email</label>
-            <input name="email" type="email" required placeholder="admin@example.com" className="w-full bg-white border border-black rounded-none px-3 py-2 text-sm text-black focus:border-black focus:ring-1 focus:ring-black outline-none transition-all" />
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</label>
+            <input name="email" type="email" required placeholder="admin@example.com" className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2 text-sm text-slate-900 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none transition-all" />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Password</label>
-            <input name="password" type="password" required placeholder="Min 6 chars" className="w-full bg-white border border-black rounded-none px-3 py-2 text-sm text-black focus:border-black focus:ring-1 focus:ring-black outline-none transition-all" />
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Password</label>
+            <input name="password" type="password" required placeholder="Min 6 chars" className="w-full bg-slate-50 border border-slate-200 rounded-none px-3 py-2 text-sm text-slate-900 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none transition-all" />
           </div>
-          <Button type="submit" disabled={loadingId === 'create'} className="bg-black hover:bg-gray-800 text-white font-bold h-[38px] rounded-none uppercase tracking-widest text-xs border border-transparent">
+          <Button type="submit" disabled={loadingId === 'create'} className="bg-violet-600 hover:bg-violet-700 text-white font-bold h-[38px] rounded-none uppercase tracking-wider text-xs border border-transparent shadow-sm">
             {loadingId === 'create' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Admin'}
           </Button>
         </form>
       </div>
 
-      <div className="bg-white border border-black rounded-none overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="bg-white border border-slate-200 rounded-none overflow-hidden shadow-sm">
         {error && (
-          <div className="p-4 bg-red-50 border-b border-black text-red-600 text-sm font-bold uppercase tracking-wider">
+          <div className="p-4 bg-red-50 border-b border-red-200 text-red-600 text-sm font-semibold uppercase tracking-wider">
             {error}
           </div>
         )}
       
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-black">
-          <thead className="bg-gray-50 text-[10px] uppercase font-bold text-gray-500 border-b border-black tracking-widest">
+        <table className="w-full text-left text-sm text-slate-900">
+          <thead className="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200 tracking-wider">
             <tr>
               <th className="px-6 py-4">User</th>
               <th className="px-6 py-4">Current Role</th>
@@ -91,49 +91,49 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-slate-100">
             {users.map((user, index) => (
               <motion.tr 
                 key={user.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="hover:bg-gray-50 transition-colors"
+                className="hover:bg-slate-50 transition-colors"
               >
-                <td className="px-6 py-4 font-bold text-black flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-none bg-gray-100 flex items-center justify-center overflow-hidden border border-black">
+                <td className="px-6 py-4 font-extrabold text-slate-900 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-none bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
                     {user.avatar_url ? (
                       <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <UserIcon className="w-4 h-4 text-gray-500" />
+                      <UserIcon className="w-4 h-4 text-slate-500" />
                     )}
                   </div>
                   <div>
-                    <div className="uppercase tracking-wide">{user.full_name || 'Anonymous User'}</div>
-                    <div className="text-[10px] text-gray-500 font-bold font-mono mt-0.5">{user.id.slice(0, 8)}...</div>
+                    <div className="tracking-tight">{user.full_name || 'Anonymous User'}</div>
+                    <div className="text-xs text-slate-500 font-semibold font-mono mt-0.5">{user.id.slice(0, 8)}...</div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none text-[10px] font-black uppercase tracking-widest border ${
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none text-xs font-bold uppercase tracking-wider ${
                     user.role === 'admin' 
-                      ? 'bg-black text-white border-black' 
+                      ? 'bg-violet-100 text-violet-700' 
                       : user.role === 'premium'
-                      ? 'bg-gray-100 text-black border-black'
-                      : 'bg-white text-gray-500 border-gray-300'
+                      ? 'bg-amber-50 text-amber-600'
+                      : 'bg-slate-100 text-slate-600'
                   }`}>
-                    {user.role === 'admin' && <ShieldAlert className="w-3 h-3" />}
-                    {user.role === 'premium' && <ShieldCheck className="w-3 h-3" />}
-                    {user.role === 'free' && <UserIcon className="w-3 h-3" />}
+                    {user.role === 'admin' && <ShieldAlert className="w-3.5 h-3.5" />}
+                    {user.role === 'premium' && <ShieldCheck className="w-3.5 h-3.5" />}
+                    {user.role === 'free' && <UserIcon className="w-3.5 h-3.5" />}
                     {(user.role || 'free').toUpperCase()}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs font-bold uppercase tracking-wider text-black">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                   {new Date(user.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 text-right">
                   {loadingId === user.id ? (
                     <div className="flex justify-end pr-4">
-                      <Loader2 className="w-4 h-4 animate-spin text-black" />
+                      <Loader2 className="w-4 h-4 animate-spin text-slate-600" />
                     </div>
                   ) : (
                     <div className="flex justify-end gap-2">
@@ -142,7 +142,7 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
                           onClick={() => handleRoleChange(user.id, 'admin')}
                           variant="outline" 
                           size="sm"
-                          className="rounded-none border-black text-black hover:bg-gray-100 font-bold uppercase tracking-widest text-[10px]"
+                          className="rounded-none border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-violet-600 hover:border-violet-300 font-bold uppercase tracking-wider text-xs"
                         >
                           Make Admin
                         </Button>
@@ -151,7 +151,7 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
                           onClick={() => handleRoleChange(user.id, 'free')}
                           variant="outline" 
                           size="sm"
-                          className="rounded-none border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-black hover:border-black font-bold uppercase tracking-widest text-[10px]"
+                          className="rounded-none border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-red-600 hover:border-red-300 font-bold uppercase tracking-wider text-xs"
                         >
                           Revoke Admin
                         </Button>
@@ -164,7 +164,7 @@ export function ClientUsers({ initialUsers }: { initialUsers: Profile[] }) {
             
             {users.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-bold uppercase tracking-widest bg-gray-50">
+                <td colSpan={4} className="px-6 py-12 text-center text-slate-500 font-semibold uppercase tracking-wider bg-slate-50">
                   No users found in the database.
                 </td>
               </tr>

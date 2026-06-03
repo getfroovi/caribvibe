@@ -87,34 +87,34 @@ export default function VIPSettingsPage() {
   return (
     <div className="max-w-4xl mx-auto pb-20">
       <div className="mb-10">
-        <h1 className="text-3xl font-black tracking-tight text-black">VIP Configuration</h1>
-        <p className="text-sm text-gray-500 mt-1 font-bold uppercase tracking-wider">Manage the paywall modal and the dedicated VIP sign-up landing page.</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">VIP Configuration</h1>
+        <p className="text-lg text-slate-500 mt-2">Manage the paywall modal and the dedicated VIP sign-up landing page.</p>
       </div>
       
       <form onSubmit={handleSave} className="space-y-8">
         
         {/* VIP Modal Settings */}
-        <div className="bg-white border border-black rounded-none p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-lg font-black mb-1 text-black flex items-center gap-2 uppercase tracking-tight">Video Player Modal</h2>
-          <p className="text-sm text-gray-500 mb-6 font-bold uppercase tracking-wider">Appears when a user hits the paywall on a premium video.</p>
+        <div className="bg-white border border-slate-200 rounded-none p-8 shadow-sm">
+          <h2 className="text-lg font-bold mb-1 text-slate-900 flex items-center gap-2 uppercase tracking-tight">Video Player Modal</h2>
+          <p className="text-sm text-slate-500 mb-6 font-semibold uppercase tracking-wider">Appears when a user hits the paywall on a premium video.</p>
           
           <div className="space-y-5">
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Modal Title</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Modal Title</label>
               <input
                 type="text"
                 value={settings.modal_title}
                 onChange={e => setSettings({...settings, modal_title: e.target.value})}
-                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Modal Description</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Modal Description</label>
               <textarea
                 value={settings.modal_description}
                 onChange={e => setSettings({...settings, modal_description: e.target.value})}
-                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all h-24 resize-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all h-24 resize-none"
                 required
               />
             </div>
@@ -122,64 +122,64 @@ export default function VIPSettingsPage() {
         </div>
 
         {/* VIP Sign-Up Page Settings */}
-        <div className="bg-white border border-black rounded-none p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-lg font-black mb-1 text-black flex items-center gap-2 uppercase tracking-tight">VIP Sign-Up Page</h2>
-          <p className="text-sm text-gray-500 mb-6 font-bold uppercase tracking-wider">The dedicated /vip landing page.</p>
+        <div className="bg-white border border-slate-200 rounded-none p-8 shadow-sm">
+          <h2 className="text-lg font-bold mb-1 text-slate-900 flex items-center gap-2 uppercase tracking-tight">VIP Sign-Up Page</h2>
+          <p className="text-sm text-slate-500 mb-6 font-semibold uppercase tracking-wider">The dedicated /vip landing page.</p>
           
           <div className="space-y-5">
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Page Title</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Page Title</label>
               <input
                 type="text"
                 value={settings.page_title}
                 onChange={e => setSettings({...settings, page_title: e.target.value})}
-                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Page Description</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Page Description</label>
               <textarea
                 value={settings.page_description}
                 onChange={e => setSettings({...settings, page_description: e.target.value})}
-                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all h-24 resize-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all h-24 resize-none"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Pricing Text</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Pricing Text</label>
               <input
                 type="text"
                 value={settings.pricing_text}
                 onChange={e => setSettings({...settings, pricing_text: e.target.value})}
-                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
                 placeholder="e.g. $9.99/mo"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Square Subscription Plan ID</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Square Subscription Plan ID</label>
               <input
                 type="text"
                 value={settings.square_plan_id || ''}
                 onChange={e => setSettings({...settings, square_plan_id: e.target.value})}
-                className="w-full bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all font-mono"
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all font-mono"
                 placeholder="e.g. 5CXXXXXXXXXXXX"
                 required
               />
-              <p className="text-xs text-gray-500 mt-2 font-bold uppercase tracking-wider">You must create a Subscription Plan in your Square Dashboard and paste the ID here.</p>
+              <p className="text-xs text-slate-500 mt-2 font-semibold uppercase tracking-wider">You must create a Subscription Plan in your Square Dashboard and paste the ID here.</p>
             </div>
           </div>
         </div>
 
         {/* Benefits List */}
-        <div className="bg-white border border-black rounded-none p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="bg-white border border-slate-200 rounded-none p-8 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-lg font-black text-black uppercase tracking-tight">VIP Benefits</h2>
-              <p className="text-sm text-gray-500 mt-1 font-bold uppercase tracking-wider">Displayed on both the Modal and the Sign-Up page.</p>
+              <h2 className="text-lg font-bold text-slate-900 uppercase tracking-tight">VIP Benefits</h2>
+              <p className="text-sm text-slate-500 mt-1 font-semibold uppercase tracking-wider">Displayed on both the Modal and the Sign-Up page.</p>
             </div>
-            <Button type="button" variant="outline" onClick={addBenefit} className="bg-white text-black hover:bg-gray-100 border border-black rounded-none text-[10px] font-bold uppercase tracking-widest">
+            <Button type="button" variant="outline" onClick={addBenefit} className="bg-white text-amber-600 hover:bg-amber-50 border border-slate-300 hover:border-amber-300 rounded-none text-xs font-bold uppercase tracking-wider">
               <Plus className="w-4 h-4 mr-2" /> Add Benefit
             </Button>
           </div>
@@ -191,20 +191,20 @@ export default function VIPSettingsPage() {
                   type="text"
                   value={benefit}
                   onChange={e => updateBenefit(index, e.target.value)}
-                  className="flex-1 bg-white border border-black rounded-none px-4 py-3 text-black text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
                   required
                 />
                 <button 
                   type="button" 
                   onClick={() => removeBenefit(index)}
-                  className="p-3 text-red-500 hover:text-white bg-white border border-red-500 rounded-none hover:bg-red-500 transition-colors"
+                  className="p-3 text-red-500 hover:text-red-600 bg-white border border-red-200 rounded-none hover:bg-red-50 hover:border-red-300 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
             {settings.benefits.length === 0 && (
-              <p className="text-gray-500 text-sm font-bold uppercase tracking-wider">No benefits added. Add some to display to users.</p>
+              <p className="text-slate-500 text-sm font-semibold uppercase tracking-wider">No benefits added. Add some to display to users.</p>
             )}
           </div>
         </div>
@@ -213,7 +213,7 @@ export default function VIPSettingsPage() {
           <Button 
             type="submit" 
             disabled={saving}
-            className="bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest px-8 py-6 rounded-none transition-all border border-transparent"
+            className="bg-amber-500 text-white hover:bg-amber-600 font-bold uppercase tracking-wider px-8 py-6 rounded-none transition-all shadow-sm"
           >
             {saving ? 'Saving...' : 'Save Settings'}
           </Button>
