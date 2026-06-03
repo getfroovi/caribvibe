@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from 'react';
 import { PremiumModal } from './PremiumModal';
 import { useUserStore } from '@/store';
 import { Volume2, VolumeX, SkipForward } from 'lucide-react';
+import { AdUnit } from '@/components/video/AdUnit';
+import { createClient } from '@/lib/supabase/client';
 
 const GenericPlayer: any = dynamic(() => import('react-player'), { ssr: false });
 
@@ -35,9 +37,16 @@ export function VideoPlayer({
   const playerRef = useRef<any>(null);
   const reactPlayerRef = useRef<any>(null);
   const { role, siteMode } = useUserStore();
+  const [adSettings, setAdSettings] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
+    const fetchAdSettings = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('ad_settings').select('*').limit(1).single();
+      if (data) setAdSettings(data);
+    };
+    fetchAdSettings();
   }, []);
 
   const isUserPremium = role === 'premium' || role === 'admin';
@@ -202,10 +211,21 @@ export function VideoPlayer({
 
       {showAd && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md">
-          <p className="text-pink-500 font-bold tracking-widest uppercase text-xs mb-4">Advertisement</p>
-          <div className="w-[80%] max-w-[300px] h-[250px] bg-white/10 border border-white/20 rounded-xl flex items-center justify-center animate-pulse shadow-2xl">
-            <span className="text-gray-400 font-bold">Ad Space</span>
-          </div>
+          <p className="text-pink-500 font-bold tracking-widest uppercase text-xs mb-4 shadow-xl">Advertisement</p>
+          
+          {adSettings?.is_enabled && adSettings?.google_ad_client && adSettings?.video_ad_slot ? (
+            <div className="w-full max-w-[336px] bg-black rounded overflow-hidden">
+              <AdUnit 
+                client={adSettings.google_ad_client} 
+                slot={adSettings.video_ad_slot} 
+                format="rectangle"
+              />
+            </div>
+          ) : (
+            <div className="w-[80%] max-w-[300px] h-[250px] bg-white/10 border border-white/20 rounded-xl flex items-center justify-center animate-pulse shadow-2xl">
+              <span className="text-gray-400 font-bold">Ad Space</span>
+            </div>
+          )}
           
           <div className="absolute bottom-24 flex flex-col items-center">
             {adCountdown > 0 ? (

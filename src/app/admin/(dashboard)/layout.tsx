@@ -61,6 +61,10 @@ export default async function AdminLayout({
             <Layers className="w-4 h-4" />
             VIP Rules
           </Link>
+          <Link href="/admin/ad-settings" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
+            <span className="w-4 h-4 flex items-center justify-center font-bold text-[10px] border border-current rounded-sm">Ad</span>
+            Ad Monetization
+          </Link>
           <Link href="/admin/hero-slider" className="flex items-center gap-3 text-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all">
             <Video className="w-4 h-4" />
             Hero Slider
