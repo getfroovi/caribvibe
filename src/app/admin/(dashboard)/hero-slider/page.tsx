@@ -15,6 +15,8 @@ interface Slide {
   link_url: string | null;
   button_text: string;
   order_index: number;
+  is_trailer?: boolean;
+  trailer_url?: string | null;
 }
 
 export default function HeroSliderSettingsPage() {
@@ -68,7 +70,9 @@ export default function HeroSliderSettingsPage() {
       series_id: null,
       link_url: '',
       button_text: 'Play',
-      order_index: slides.length
+      order_index: slides.length,
+      is_trailer: false,
+      trailer_url: ''
     };
     setSlides([...slides, newSlide]);
   };
@@ -203,6 +207,36 @@ export default function HeroSliderSettingsPage() {
                         onChange={e => updateSlide(index, 'link_url', e.target.value)}
                         className="w-full bg-black border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
                         placeholder="/magazine or https://google.com"
+                      />
+                    </div>
+                  )}
+
+                  <div className="pt-4 border-t border-white/5">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <div className="relative">
+                        <input 
+                          type="checkbox" 
+                          checked={!!slide.is_trailer}
+                          onChange={(e) => updateSlide(index, 'is_trailer', e.target.checked)}
+                          className="sr-only" 
+                        />
+                        <div className={`block w-10 h-6 rounded-full transition-colors ${slide.is_trailer ? 'bg-pink-500' : 'bg-zinc-800'}`}></div>
+                        <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${slide.is_trailer ? 'transform translate-x-4' : ''}`}></div>
+                      </div>
+                      <span className="text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">Is this a Trailer?</span>
+                    </label>
+                    <p className="text-xs text-zinc-500 mt-2">If checked, the button will play a trailer video in a popup modal.</p>
+                  </div>
+
+                  {slide.is_trailer && (
+                    <div className="mt-4">
+                      <label className="block text-[10px] font-semibold text-zinc-500 mb-2 uppercase tracking-wider">Trailer Video URL</label>
+                      <input
+                        type="text"
+                        value={slide.trailer_url || ''}
+                        onChange={e => updateSlide(index, 'trailer_url', e.target.value)}
+                        className="w-full bg-black border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-white/20 transition-all"
+                        placeholder="YouTube link or .mp4 URL"
                       />
                     </div>
                   )}
