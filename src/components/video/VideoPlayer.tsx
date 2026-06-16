@@ -64,6 +64,10 @@ export function VideoPlayer({
     return () => clearTimeout(timeout);
   }, [isActive, isExternal, shouldEnforcePaywall, isPaywallActive, previewDurationSeconds]);
 
+  const [duration, setDuration] = useState<number | null>(null);
+  const [adsState, setAdsState] = useState({ first: false, mid: false, last: false });
+  const [activeSeconds, setActiveSeconds] = useState(0);
+
   useEffect(() => {
     const player = playerRef.current;
     if (player && videoType === 'mux') {
@@ -75,17 +79,52 @@ export function VideoPlayer({
     }
   }, [isActive, isPaywallActive, showAd, videoType]);
 
-  // Mid-roll Ads for Free Mode (every 30 seconds)
+  // Track active viewing time
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isActive && siteMode === 'free' && !isPaywallActive && !showAd) {
+    if (isActive && !isPaywallActive && !showAd) {
       interval = setInterval(() => {
-        setShowAd(true);
-        setAdCountdown(5);
-      }, 30000);
+        setActiveSeconds(prev => prev + 1);
+      }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isActive, siteMode, isPaywallActive, showAd]);
+  }, [isActive, isPaywallActive, showAd]);
+
+  // Ad triggers based on user rules
+  useEffect(() => {
+    if (siteMode !== 'free' || !isActive || isPaywallActive || showAd) return;
+
+    const trigger = (key: keyof typeof adsState) => {
+      setShowAd(true);
+      setAdCountdown(5);
+      setAdsState(prev => ({ ...prev, [key]: true }));
+    };
+
+    // 1. After 30 seconds when the video starts
+    if (!adsState.first && activeSeconds >= 30) {
+      trigger('first');
+    }
+    // 2. Mid-way the duration of the video
+    else if (!adsState.mid && duration && activeSeconds >= (duration / 2)) {
+      trigger('mid');
+    }
+    // Fallback if duration is unknown (e.g. YouTube iframe)
+    else if (!adsState.mid && !duration && activeSeconds >= 90) {
+      trigger('mid');
+    }
+    // 3. 60 seconds before the video ends
+    else if (!adsState.last && duration && duration > 60 && activeSeconds >= (duration - 60)) {
+      trigger('last');
+    }
+  }, [activeSeconds, duration, adsState, isActive, isPaywallActive, showAd, siteMode]);
+
+  // Reset state when video changes (becomes inactive)
+  useEffect(() => {
+    if (!isActive) {
+      setAdsState({ first: false, mid: false, last: false });
+      setActiveSeconds(0);
+    }
+  }, [isActive]);
 
   // Ad Countdown
   useEffect(() => {
@@ -146,6 +185,7 @@ export function VideoPlayer({
             muted={isMuted}
             style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
             onProgress={handleProgressReactPlayer}
+            onDuration={(d: number) => setDuration(d)}
           />
         ) : videoUrl && (videoType === 'youtube' || videoUrl.includes('youtube.com')) ? (
           <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto">
@@ -185,6 +225,7 @@ export function VideoPlayer({
               controls={true}
               style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
               onProgress={handleProgressReactPlayer}
+              onDuration={(d: number) => setDuration(d)}
             />
           </div>
         ) : (
