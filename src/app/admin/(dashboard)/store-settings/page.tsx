@@ -12,7 +12,9 @@ export default function StoreSettingsPage() {
   const [settings, setSettings] = useState({
     id: '',
     is_enabled: false,
-    store_url: ''
+    store_url: '',
+    is_etsy_enabled: false,
+    etsy_url: ''
   });
 
   const supabase = createClient();
@@ -29,7 +31,13 @@ export default function StoreSettingsPage() {
           toast.error('Failed to load store settings. Have you pushed the DB migrations?');
         }
       } else if (data) {
-        setSettings(data);
+        setSettings({
+          id: data.id,
+          is_enabled: data.is_enabled || false,
+          store_url: data.store_url || '',
+          is_etsy_enabled: data.is_etsy_enabled || false,
+          etsy_url: data.etsy_url || ''
+        });
       }
     } catch (err) {
       console.error(err);
@@ -44,14 +52,18 @@ export default function StoreSettingsPage() {
       if (settings.id) {
         const { error } = await supabase.from('store_settings').update({
           is_enabled: settings.is_enabled,
-          store_url: settings.store_url
+          store_url: settings.store_url,
+          is_etsy_enabled: settings.is_etsy_enabled,
+          etsy_url: settings.etsy_url
         }).eq('id', settings.id);
         
         if (error) throw error;
       } else {
         const { data, error } = await supabase.from('store_settings').insert([{
           is_enabled: settings.is_enabled,
-          store_url: settings.store_url
+          store_url: settings.store_url,
+          is_etsy_enabled: settings.is_etsy_enabled,
+          etsy_url: settings.etsy_url
         }]).select().single();
         
         if (error) throw error;
@@ -84,8 +96,8 @@ export default function StoreSettingsPage() {
         <div className="bg-white border border-slate-200 rounded-none p-8 shadow-sm">
           <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-200">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 mb-1 uppercase tracking-tight">Enable Embedded Store</h2>
-              <p className="text-sm text-slate-500 font-semibold uppercase tracking-wider">Turn on to display the iframe storefront to users instead of the "Coming Soon" message.</p>
+              <h2 className="text-lg font-bold text-slate-900 mb-1 uppercase tracking-tight">Main Storefront</h2>
+              <p className="text-sm text-slate-500 font-semibold uppercase tracking-wider">Configure your primary embedded store (e.g. Shopify, Custom Website).</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input 
@@ -108,9 +120,37 @@ export default function StoreSettingsPage() {
                 className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 transition-all font-mono"
                 placeholder="https://your-shopify-store.com"
               />
-              <p className="text-xs text-slate-500 mt-2 font-semibold uppercase tracking-wider flex items-center gap-2">
-                <ShoppingBag className="w-3 h-3" /> Note: Make sure the URL allows iframe embedding (some platforms restrict this via X-Frame-Options).
-              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-none p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-200">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 mb-1 uppercase tracking-tight">Etsy Storefront</h2>
+              <p className="text-sm text-slate-500 font-semibold uppercase tracking-wider">Configure a secondary Etsy store. A tabbed UI will automatically appear if both are enabled.</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={settings.is_etsy_enabled}
+                onChange={(e) => setSettings({...settings, is_etsy_enabled: e.target.checked})}
+                className="sr-only peer" 
+              />
+              <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#F1641E] transition-colors"></div>
+            </label>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Etsy Store URL</label>
+              <input
+                type="url"
+                value={settings.etsy_url || ''}
+                onChange={e => setSettings({...settings, etsy_url: e.target.value})}
+                className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-[#F1641E] focus:border-[#F1641E] transition-all font-mono"
+                placeholder="https://www.etsy.com/shop/YourShopName"
+              />
             </div>
           </div>
         </div>
