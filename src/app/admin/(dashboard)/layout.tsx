@@ -1,4 +1,4 @@
-import { Video, FileText, Users, LogOut, Layers, ShieldCheck } from 'lucide-react';
+import { Video, FileText, Users, LogOut, Layers, ShieldCheck, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
@@ -71,6 +71,10 @@ export default async function AdminLayout({
           <Link href="/admin/hero-slider" className="flex items-center gap-3 text-sm font-medium text-slate-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2.5 transition-colors rounded-none border-l-2 border-transparent hover:border-pink-500">
             <Video className="w-4 h-4" />
             Hero Slider
+          </Link>
+          <Link href="/admin/store-settings" className="flex items-center gap-3 text-sm font-medium text-slate-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2.5 transition-colors rounded-none border-l-2 border-transparent hover:border-pink-500">
+            <ShoppingBag className="w-4 h-4" />
+            Store Settings
           </Link>
         </nav>
 
