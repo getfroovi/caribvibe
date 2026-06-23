@@ -28,6 +28,7 @@ export default async function RootLayout({
 }>) {
   const supabase = await createClient();
   const { data: adSettings } = await supabase.from('ad_settings').select('*').limit(1).single();
+  const { data: customCode } = await supabase.from('custom_code').select('*').limit(1).single();
 
   return (
     <html
@@ -41,12 +42,18 @@ export default async function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        {customCode?.header_code && (
+          <div dangerouslySetInnerHTML={{ __html: customCode.header_code }} />
+        )}
       </head>
       <body>
         <AuthProvider>
           {children}
           <Toaster theme="dark" position="bottom-center" />
         </AuthProvider>
+        {customCode?.footer_code && (
+          <div dangerouslySetInnerHTML={{ __html: customCode.footer_code }} />
+        )}
       </body>
     </html>
   );
