@@ -12,6 +12,7 @@ export default function CustomCodePage() {
   const [settings, setSettings] = useState({
     id: '',
     header_code: '',
+    body_top_code: '',
     footer_code: ''
   });
 
@@ -32,6 +33,7 @@ export default function CustomCodePage() {
         setSettings({
           id: data.id,
           header_code: data.header_code || '',
+          body_top_code: data.body_top_code || '',
           footer_code: data.footer_code || ''
         });
       }
@@ -48,6 +50,7 @@ export default function CustomCodePage() {
       if (settings.id) {
         const { error } = await supabase.from('custom_code').update({
           header_code: settings.header_code,
+          body_top_code: settings.body_top_code,
           footer_code: settings.footer_code
         }).eq('id', settings.id);
         
@@ -55,6 +58,7 @@ export default function CustomCodePage() {
       } else {
         const { data, error } = await supabase.from('custom_code').insert([{
           header_code: settings.header_code,
+          body_top_code: settings.body_top_code,
           footer_code: settings.footer_code
         }]).select().single();
         
@@ -110,6 +114,24 @@ export default function CustomCodePage() {
             onChange={e => setSettings({...settings, header_code: e.target.value})}
             className="w-full h-64 bg-[#1E1E1E] text-green-400 border border-slate-800 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all font-mono whitespace-pre placeholder:text-gray-600"
             placeholder="<!-- Paste <script>, <style>, or <meta> tags here -->"
+            spellCheck="false"
+          />
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-none p-8 shadow-sm">
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-slate-900 mb-1 uppercase tracking-tight flex items-center gap-2">
+              <Code className="w-5 h-5 text-pink-500" /> Body Top Code
+            </h2>
+            <p className="text-sm text-slate-500 font-semibold uppercase tracking-wider">
+              Injected immediately after the opening &lt;body&gt; tag. Use this for Google Tag Manager &lt;noscript&gt; blocks.
+            </p>
+          </div>
+          <textarea
+            value={settings.body_top_code || ''}
+            onChange={e => setSettings({...settings, body_top_code: e.target.value})}
+            className="w-full h-64 bg-[#1E1E1E] text-green-400 border border-slate-800 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all font-mono whitespace-pre placeholder:text-gray-600"
+            placeholder="<!-- Paste <noscript> tags here -->"
             spellCheck="false"
           />
         </div>

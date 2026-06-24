@@ -47,6 +47,9 @@ export default async function RootLayout({
         )}
       </head>
       <body>
+        {customCode?.body_top_code && (
+          <div dangerouslySetInnerHTML={{ __html: customCode.body_top_code }} />
+        )}
         <AuthProvider>
           {children}
           <Toaster theme="dark" position="bottom-center" />
