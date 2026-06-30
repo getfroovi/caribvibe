@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { Save, BookOpen, Code, Link as LinkIcon } from 'lucide-react';
+import { Save, BookOpen, Code, Link as LinkIcon, AlertTriangle } from 'lucide-react';
 
 export default function MagazineSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
   const [settings, setSettings] = useState({
     id: '',
     is_enabled: false,
@@ -16,18 +17,20 @@ export default function MagazineSettingsPage() {
     embed_code: ''
   });
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     fetchSettings();
   }, []);
 
   const fetchSettings = async () => {
+    const timer = setTimeout(() => setLoading(false), 4000);
     try {
       const { data, error } = await supabase.from('magazine_settings').select('*').limit(1).single();
       if (error) {
         if (error.code !== 'PGRST116') {
-          toast.error('Failed to load magazine settings. Have you pushed the DB migrations?');
+          setDbError(error.message);
+          toast.error(`Database Error: ${error.message}`);
         }
       } else if (data) {
         setSettings({
@@ -37,9 +40,11 @@ export default function MagazineSettingsPage() {
           embed_code: data.embed_code || ''
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setDbError(err.message || 'Unknown network error');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
     }
   };
@@ -87,6 +92,21 @@ export default function MagazineSettingsPage() {
           <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Settings'}
         </Button>
       </div>
+
+      {dbError && (
+        <div className="bg-red-50 border border-red-200 p-6 mb-6 flex gap-4 text-red-800 items-start shadow-sm">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
+          <div>
+            <h4 className="font-bold text-sm mb-1 uppercase tracking-tight text-red-900">Missing Database Table</h4>
+            <p className="text-xs text-red-800/80 leading-relaxed font-semibold uppercase tracking-wider mb-2">
+              Error: {dbError}
+            </p>
+            <p className="text-xs text-red-900 font-bold">
+              Please copy and run the SQL migration script from our walkthrough in your Supabase SQL Editor so this table exists!
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-6">
         <div className="bg-white border border-slate-200 rounded-none p-8 shadow-sm">
