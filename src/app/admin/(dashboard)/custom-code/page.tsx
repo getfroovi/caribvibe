@@ -72,8 +72,12 @@ export default function CustomCodePage() {
       }
       
       toast.success('Custom code saved successfully!');
+      setDbError(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save custom code');
+      console.error(err);
+      const msg = err.message || 'Failed to save custom code';
+      setDbError(msg);
+      toast.error(`Error saving: ${msg}`);
     } finally {
       setSaving(false);
     }

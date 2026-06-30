@@ -72,8 +72,12 @@ export default function MagazineSettingsPage() {
       }
       
       toast.success('Magazine settings saved successfully!');
+      setDbError(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save magazine settings');
+      console.error(err);
+      const msg = err.message || 'Failed to save magazine settings';
+      setDbError(msg);
+      toast.error(`Error saving: ${msg}`);
     } finally {
       setSaving(false);
     }

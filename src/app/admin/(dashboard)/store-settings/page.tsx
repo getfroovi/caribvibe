@@ -80,8 +80,12 @@ export default function StoreSettingsPage() {
       }
       
       toast.success('Store settings saved successfully!');
+      setDbError(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save settings');
+      console.error(err);
+      const msg = err.message || 'Failed to save settings';
+      setDbError(msg);
+      toast.error(`Error saving: ${msg}`);
     } finally {
       setSaving(false);
     }
