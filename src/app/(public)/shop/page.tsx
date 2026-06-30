@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ShoppingBag, Store } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -9,9 +9,11 @@ export default function ShopPage() {
   const [settings, setSettings] = useState<{ is_enabled: boolean, store_url: string, is_etsy_enabled: boolean, etsy_url: string } | null>(null);
   const [activeTab, setActiveTab] = useState<'main' | 'etsy'>('main');
 
+  const supabase = useMemo(() => createClient(), []);
+
   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 4000);
     const fetchSettings = async () => {
-      const supabase = createClient();
       try {
         const { data, error } = await supabase.from('store_settings').select('*').limit(1).single();
         if (data && !error) {
@@ -24,12 +26,13 @@ export default function ShopPage() {
       } catch (err) {
         console.error('Error fetching store settings:', err);
       } finally {
+        clearTimeout(timer);
         setLoading(false);
       }
     };
     
     fetchSettings();
-  }, []);
+  }, [supabase]);
 
   if (loading) {
     return (

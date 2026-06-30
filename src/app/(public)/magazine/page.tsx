@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { BookOpen } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -8,9 +8,11 @@ export default function MagazinePage() {
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<{ is_enabled: boolean, embed_url: string, embed_code: string } | null>(null);
 
+  const supabase = useMemo(() => createClient(), []);
+
   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 4000);
     const fetchSettings = async () => {
-      const supabase = createClient();
       try {
         const { data, error } = await supabase.from('magazine_settings').select('*').limit(1).single();
         if (data && !error) {
@@ -19,12 +21,13 @@ export default function MagazinePage() {
       } catch (err) {
         console.error('Error fetching magazine settings:', err);
       } finally {
+        clearTimeout(timer);
         setLoading(false);
       }
     };
     
     fetchSettings();
-  }, []);
+  }, [supabase]);
 
   if (loading) {
     return (
