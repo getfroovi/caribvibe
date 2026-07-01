@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Save, Code, AlertTriangle } from 'lucide-react';
+import { saveCustomCodeAction } from '@/app/admin/settings-actions';
 
 export default function CustomCodePage() {
   const [loading, setLoading] = useState(true);
@@ -52,27 +53,19 @@ export default function CustomCodePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      if (settings.id) {
-        const { error } = await supabase.from('custom_code').update({
-          header_code: settings.header_code,
-          body_top_code: settings.body_top_code,
-          footer_code: settings.footer_code
-        }).eq('id', settings.id);
-        
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase.from('custom_code').insert([{
-          header_code: settings.header_code,
-          body_top_code: settings.body_top_code,
-          footer_code: settings.footer_code
-        }]).select().single();
-        
-        if (error) throw error;
-        if (data) setSettings(data);
+      const res = await saveCustomCodeAction({
+        header_code: settings.header_code,
+        body_top_code: settings.body_top_code,
+        footer_code: settings.footer_code
+      });
+      
+      if (!res.success) {
+        throw new Error(res.error || 'Failed to save custom code');
       }
       
       toast.success('Custom code saved successfully!');
       setDbError(null);
+      await fetchSettings();
     } catch (err: any) {
       console.error(err);
       const msg = err.message || 'Failed to save custom code';

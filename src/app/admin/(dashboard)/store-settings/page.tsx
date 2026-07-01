@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Save, ShoppingBag, AlertTriangle } from 'lucide-react';
+import { saveStoreSettingsAction } from '@/app/admin/settings-actions';
 
 export default function StoreSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -58,29 +59,20 @@ export default function StoreSettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      if (settings.id) {
-        const { error } = await supabase.from('store_settings').update({
-          is_enabled: settings.is_enabled,
-          store_url: settings.store_url,
-          is_etsy_enabled: settings.is_etsy_enabled,
-          etsy_url: settings.etsy_url
-        }).eq('id', settings.id);
-        
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase.from('store_settings').insert([{
-          is_enabled: settings.is_enabled,
-          store_url: settings.store_url,
-          is_etsy_enabled: settings.is_etsy_enabled,
-          etsy_url: settings.etsy_url
-        }]).select().single();
-        
-        if (error) throw error;
-        if (data) setSettings(data);
+      const res = await saveStoreSettingsAction({
+        is_enabled: settings.is_enabled,
+        store_url: settings.store_url,
+        is_etsy_enabled: settings.is_etsy_enabled,
+        etsy_url: settings.etsy_url
+      });
+      
+      if (!res.success) {
+        throw new Error(res.error || 'Failed to save settings');
       }
       
       toast.success('Store settings saved successfully!');
       setDbError(null);
+      await fetchSettings();
     } catch (err: any) {
       console.error(err);
       const msg = err.message || 'Failed to save settings';

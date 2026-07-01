@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Save, BookOpen, Code, Link as LinkIcon, AlertTriangle } from 'lucide-react';
+import { saveMagazineSettingsAction } from '@/app/admin/settings-actions';
 
 export default function MagazineSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -52,27 +53,19 @@ export default function MagazineSettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      if (settings.id) {
-        const { error } = await supabase.from('magazine_settings').update({
-          is_enabled: settings.is_enabled,
-          embed_url: settings.embed_url,
-          embed_code: settings.embed_code
-        }).eq('id', settings.id);
-        
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase.from('magazine_settings').insert([{
-          is_enabled: settings.is_enabled,
-          embed_url: settings.embed_url,
-          embed_code: settings.embed_code
-        }]).select().single();
-        
-        if (error) throw error;
-        if (data) setSettings(data);
+      const res = await saveMagazineSettingsAction({
+        is_enabled: settings.is_enabled,
+        embed_url: settings.embed_url,
+        embed_code: settings.embed_code
+      });
+      
+      if (!res.success) {
+        throw new Error(res.error || 'Failed to save settings');
       }
       
       toast.success('Magazine settings saved successfully!');
       setDbError(null);
+      await fetchSettings();
     } catch (err: any) {
       console.error(err);
       const msg = err.message || 'Failed to save magazine settings';
