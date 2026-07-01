@@ -182,7 +182,7 @@ export function CommentsModal({ isOpen, onClose, videoId }: CommentsModalProps) 
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Add a comment..."
                     disabled={posting}
-                    className="w-full bg-transparent px-4 py-3 text-sm text-white resize-none max-h-32 min-h-[44px] focus:outline-none disabled:opacity-50"
+                    className="w-full bg-transparent px-4 py-3 text-base md:text-sm text-white resize-none max-h-32 min-h-[44px] focus:outline-none disabled:opacity-50"
                     rows={1}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
