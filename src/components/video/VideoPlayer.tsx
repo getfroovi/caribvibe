@@ -68,17 +68,6 @@ export function VideoPlayer({
   const [adsState, setAdsState] = useState({ first: false, mid: false, last: false });
   const [activeSeconds, setActiveSeconds] = useState(0);
 
-  useEffect(() => {
-    const player = playerRef.current;
-    if (player && videoType === 'mux') {
-      if (isActive && !isPaywallActive && !showAd) {
-        player.play().catch(() => {});
-      } else {
-        player.pause();
-      }
-    }
-  }, [isActive, isPaywallActive, showAd, videoType]);
-
   // Track active viewing time
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -187,45 +176,29 @@ export function VideoPlayer({
             onProgress={handleProgressReactPlayer}
             onDuration={(d: number) => setDuration(d)}
           />
-        ) : videoUrl && (videoType === 'youtube' || videoUrl.includes('youtube.com')) ? (
-          <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto">
-            {isActive && (
-              <iframe
-                src={`https://www.youtube.com/embed/${ytId}?autoplay=${showAd ? 0 : 1}&mute=${isMuted ? 1 : 0}&controls=1&loop=1&playlist=${ytId}&playsinline=1`}
-                className="w-full h-full"
-                style={{ border: 'none', objectFit: 'contain' }}
-                allow="autoplay; fullscreen; encrypted-media"
-                allowFullScreen
-              />
-            )}
-          </div>
-        ) : videoUrl && (videoType === 'vimeo' || videoUrl.includes('vimeo.com')) ? (
-          <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto">
-            {isActive && (
-              <iframe
-                src={`https://player.vimeo.com/video/${vimeoId}?autoplay=${showAd ? 0 : 1}&muted=${isMuted ? 1 : 0}&loop=1&autopause=0`}
-                className="w-full h-full"
-                style={{ border: 'none', objectFit: 'contain' }}
-                allow="autoplay; fullscreen"
-                allowFullScreen
-              />
-            )}
-          </div>
         ) : videoUrl ? (
           <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto">
             <GenericPlayer
               className="react-player"
               ref={reactPlayerRef}
-              url={videoUrl}
+              url={ytUrl || videoUrl}
               playing={isActive && !isPaywallActive && !showAd}
               loop
               muted={isMuted}
               width="100%"
               height="100%"
-              controls={true}
+              controls={false}
               style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
               onProgress={handleProgressReactPlayer}
               onDuration={(d: number) => setDuration(d)}
+              config={{
+                youtube: {
+                  playerVars: { playsinline: 1, controls: 1, loop: 1 }
+                },
+                vimeo: {
+                  playerOptions: { loop: true }
+                }
+              }}
             />
           </div>
         ) : (
