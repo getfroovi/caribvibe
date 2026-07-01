@@ -172,12 +172,29 @@ export function VideoPlayer({
             playing={isActive && !isPaywallActive && !showAd}
             loop
             muted={isMuted}
+            playsinline={true}
             style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
             onProgress={handleProgressReactPlayer}
             onDuration={(d: number) => setDuration(d)}
+            config={{
+              file: {
+                attributes: {
+                  playsInline: true,
+                  playsinline: true,
+                  webkitPlaysInline: true
+                }
+              }
+            }}
           />
         ) : videoUrl ? (
-          <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto">
+          <div 
+            className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto cursor-pointer"
+            onClick={() => {
+              const player = reactPlayerRef.current?.getInternalPlayer();
+              if (player?.play) player.play();
+              else if (player?.playVideo) player.playVideo();
+            }}
+          >
             <GenericPlayer
               className="react-player"
               ref={reactPlayerRef}
@@ -185,6 +202,7 @@ export function VideoPlayer({
               playing={isActive && !isPaywallActive && !showAd}
               loop
               muted={isMuted}
+              playsinline={true}
               width="100%"
               height="100%"
               controls={false}
@@ -192,11 +210,18 @@ export function VideoPlayer({
               onProgress={handleProgressReactPlayer}
               onDuration={(d: number) => setDuration(d)}
               config={{
+                file: {
+                  attributes: {
+                    playsInline: true,
+                    playsinline: true,
+                    webkitPlaysInline: true
+                  }
+                },
                 youtube: {
-                  playerVars: { playsinline: 1, controls: 1, loop: 1 }
+                  playerVars: { playsinline: 1, controls: 1, loop: 1, autoplay: 1 }
                 },
                 vimeo: {
-                  playerOptions: { loop: true }
+                  playerOptions: { loop: true, playsinline: true }
                 }
               }}
             />
