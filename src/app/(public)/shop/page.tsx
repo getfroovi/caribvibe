@@ -59,7 +59,14 @@ export default function ShopPage() {
   }
 
   const showTabs = hasMain && hasEtsy;
-  const activeUrl = activeTab === 'main' ? settings?.store_url : settings?.etsy_url;
+  const rawUrl = activeTab === 'main' ? settings?.store_url : settings?.etsy_url;
+  
+  const cleanIframeUrl = (val?: string) => {
+    if (!val) return '';
+    const match = val.match(/src=["']([^"']+)["']/i);
+    return match ? match[1] : val.trim();
+  };
+  const activeUrl = cleanIframeUrl(rawUrl);
 
   return (
     <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-white">

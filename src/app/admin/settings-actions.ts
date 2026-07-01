@@ -35,6 +35,16 @@ async function getAdminDb() {
   return supabase;
 }
 
+function cleanUrlInput(val?: string): string {
+  if (!val) return '';
+  const trimmed = val.trim();
+  const match = trimmed.match(/src=["']([^"']+)["']/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return trimmed;
+}
+
 export async function saveStoreSettingsAction(payload: {
   is_enabled: boolean;
   store_url: string;
@@ -43,6 +53,12 @@ export async function saveStoreSettingsAction(payload: {
 }) {
   try {
     const db = await getAdminDb();
+    const cleanedPayload = {
+      ...payload,
+      store_url: cleanUrlInput(payload.store_url),
+      etsy_url: cleanUrlInput(payload.etsy_url),
+    };
+
     const { data: existing, error: selectError } = await db.from('store_settings').select('id').limit(1);
 
     if (selectError && selectError.code !== 'PGRST116') {
@@ -51,10 +67,16 @@ export async function saveStoreSettingsAction(payload: {
 
     let error;
     if (existing && existing.length > 0) {
-      const res = await db.from('store_settings').update(payload).eq('id', existing[0].id);
+      const res = await db.from('store_settings').update(cleanedPayload).eq('id', existing[0].id).select();
+      if (!res.error && (!res.data || res.data.length === 0)) {
+        return { success: false, error: 'Database update blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor so your account has UPDATE permissions.' };
+      }
       error = res.error;
     } else {
-      const res = await db.from('store_settings').insert([payload]);
+      const res = await db.from('store_settings').insert([cleanedPayload]).select();
+      if (!res.error && (!res.data || res.data.length === 0)) {
+        return { success: false, error: 'Database insert blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+      }
       error = res.error;
     }
 
@@ -78,6 +100,11 @@ export async function saveMagazineSettingsAction(payload: {
 }) {
   try {
     const db = await getAdminDb();
+    const cleanedPayload = {
+      ...payload,
+      embed_url: cleanUrlInput(payload.embed_url),
+    };
+
     const { data: existing, error: selectError } = await db.from('magazine_settings').select('id').limit(1);
 
     if (selectError && selectError.code !== 'PGRST116') {
@@ -86,10 +113,16 @@ export async function saveMagazineSettingsAction(payload: {
 
     let error;
     if (existing && existing.length > 0) {
-      const res = await db.from('magazine_settings').update(payload).eq('id', existing[0].id);
+      const res = await db.from('magazine_settings').update(cleanedPayload).eq('id', existing[0].id).select();
+      if (!res.error && (!res.data || res.data.length === 0)) {
+        return { success: false, error: 'Database update blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor so your account has UPDATE permissions.' };
+      }
       error = res.error;
     } else {
-      const res = await db.from('magazine_settings').insert([payload]);
+      const res = await db.from('magazine_settings').insert([cleanedPayload]).select();
+      if (!res.error && (!res.data || res.data.length === 0)) {
+        return { success: false, error: 'Database insert blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+      }
       error = res.error;
     }
 
@@ -121,10 +154,16 @@ export async function saveCustomCodeAction(payload: {
 
     let error;
     if (existing && existing.length > 0) {
-      const res = await db.from('custom_code').update(payload).eq('id', existing[0].id);
+      const res = await db.from('custom_code').update(payload).eq('id', existing[0].id).select();
+      if (!res.error && (!res.data || res.data.length === 0)) {
+        return { success: false, error: 'Database update blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+      }
       error = res.error;
     } else {
-      const res = await db.from('custom_code').insert([payload]);
+      const res = await db.from('custom_code').insert([payload]).select();
+      if (!res.error && (!res.data || res.data.length === 0)) {
+        return { success: false, error: 'Database insert blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+      }
       error = res.error;
     }
 

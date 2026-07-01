@@ -50,6 +50,13 @@ export default function MagazinePage() {
     );
   }
 
+  const cleanIframeUrl = (val?: string) => {
+    if (!val) return '';
+    const match = val.match(/src=["']([^"']+)["']/i);
+    return match ? match[1] : val.trim();
+  };
+  const cleanEmbedUrl = cleanIframeUrl(settings.embed_url);
+
   return (
     <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-black">
       {settings.embed_code ? (
@@ -59,7 +66,7 @@ export default function MagazinePage() {
         />
       ) : (
         <iframe 
-          src={settings.embed_url} 
+          src={cleanEmbedUrl} 
           className="w-full h-full border-none flex-1"
           title="Interactive Magazine Issue"
           allowFullScreen
