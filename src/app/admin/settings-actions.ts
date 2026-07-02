@@ -65,30 +65,29 @@ export async function saveStoreSettingsAction(payload: {
       return { success: false, error: selectError.message };
     }
 
-    let error;
     if (existing && existing.length > 0) {
-      const res = await db.from('store_settings').update(cleanedPayload).eq('id', existing[0].id).select();
-      if (!res.error && (!res.data || res.data.length === 0)) {
-        return { success: false, error: 'Database update blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor so your account has UPDATE permissions.' };
+      const res = await db.rpc('admin_update_store_settings', {
+        p_id: existing[0].id,
+        p_is_enabled: cleanedPayload.is_enabled,
+        p_store_url: cleanedPayload.store_url,
+        p_is_etsy_enabled: cleanedPayload.is_etsy_enabled,
+        p_etsy_url: cleanedPayload.etsy_url
+      });
+      if (res.error) {
+        return { success: false, error: 'RPC Error: Please run the updated SQL script in Supabase to enable Admin Saving. ' + res.error.message };
       }
-      error = res.error;
     } else {
       const res = await db.from('store_settings').insert([cleanedPayload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
-        return { success: false, error: 'Database insert blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+        return { success: false, error: 'Insert blocked by RLS. Run the SQL script.' };
       }
-      error = res.error;
-    }
-
-    if (error) {
-      return { success: false, error: error.message };
+      if (res.error) return { success: false, error: res.error.message };
     }
 
     revalidatePath('/shop');
     revalidatePath('/admin/store-settings');
     return { success: true };
   } catch (err: any) {
-    console.error('saveStoreSettingsAction error:', err);
     return { success: false, error: err.message || 'Server action error' };
   }
 }
@@ -111,30 +110,28 @@ export async function saveMagazineSettingsAction(payload: {
       return { success: false, error: selectError.message };
     }
 
-    let error;
     if (existing && existing.length > 0) {
-      const res = await db.from('magazine_settings').update(cleanedPayload).eq('id', existing[0].id).select();
-      if (!res.error && (!res.data || res.data.length === 0)) {
-        return { success: false, error: 'Database update blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor so your account has UPDATE permissions.' };
+      const res = await db.rpc('admin_update_magazine_settings', {
+        p_id: existing[0].id,
+        p_is_enabled: cleanedPayload.is_enabled,
+        p_embed_url: cleanedPayload.embed_url,
+        p_embed_code: cleanedPayload.embed_code || ''
+      });
+      if (res.error) {
+        return { success: false, error: 'RPC Error: Please run the updated SQL script in Supabase to enable Admin Saving. ' + res.error.message };
       }
-      error = res.error;
     } else {
       const res = await db.from('magazine_settings').insert([cleanedPayload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
-        return { success: false, error: 'Database insert blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+        return { success: false, error: 'Insert blocked by RLS. Run the SQL script.' };
       }
-      error = res.error;
-    }
-
-    if (error) {
-      return { success: false, error: error.message };
+      if (res.error) return { success: false, error: res.error.message };
     }
 
     revalidatePath('/magazine');
     revalidatePath('/admin/magazine-settings');
     return { success: true };
   } catch (err: any) {
-    console.error('saveMagazineSettingsAction error:', err);
     return { success: false, error: err.message || 'Server action error' };
   }
 }
@@ -152,30 +149,28 @@ export async function saveCustomCodeAction(payload: {
       return { success: false, error: selectError.message };
     }
 
-    let error;
     if (existing && existing.length > 0) {
-      const res = await db.from('custom_code').update(payload).eq('id', existing[0].id).select();
-      if (!res.error && (!res.data || res.data.length === 0)) {
-        return { success: false, error: 'Database update blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+      const res = await db.rpc('admin_update_custom_code', {
+        p_id: existing[0].id,
+        p_header_code: payload.header_code || '',
+        p_body_top_code: payload.body_top_code || '',
+        p_footer_code: payload.footer_code || ''
+      });
+      if (res.error) {
+        return { success: false, error: 'RPC Error: Please run the updated SQL script in Supabase to enable Admin Saving. ' + res.error.message };
       }
-      error = res.error;
     } else {
       const res = await db.from('custom_code').insert([payload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
-        return { success: false, error: 'Database insert blocked by Supabase Row-Level Security (RLS). Please execute the master SQL sync script in your Supabase SQL Editor.' };
+        return { success: false, error: 'Insert blocked by RLS. Run the SQL script.' };
       }
-      error = res.error;
-    }
-
-    if (error) {
-      return { success: false, error: error.message };
+      if (res.error) return { success: false, error: res.error.message };
     }
 
     revalidatePath('/', 'layout');
     revalidatePath('/admin/custom-code');
     return { success: true };
   } catch (err: any) {
-    console.error('saveCustomCodeAction error:', err);
     return { success: false, error: err.message || 'Server action error' };
   }
 }
