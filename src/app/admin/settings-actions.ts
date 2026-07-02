@@ -6,23 +6,36 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 async function getAdminDb() {
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const { data: { session }, error: authError } = await supabase.auth.getSession();
 
-  if (authError || !user) {
+  if (authError || !session?.access_token) {
     throw new Error('Not authenticated. Please log in again.');
   }
 
-  const { data: profile } = await supabase
+  // Create a fresh client with explicit Authorization header to ensure Next.js doesn't drop the JWT
+  const db = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      },
+      auth: { persistSession: false }
+    }
+  );
+
+  const { data: profile } = await db
     .from('profiles')
     .select('role')
-    .eq('id', user.id)
+    .eq('id', session.user.id)
     .single();
 
   if (profile?.role !== 'admin') {
     throw new Error('Unauthorized: Admin access required.');
   }
 
-  // If SUPABASE_SERVICE_ROLE_KEY is set, use it to ensure RLS doesn't block administrative updates
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (serviceKey) {
     return createSupabaseClient(
@@ -32,7 +45,7 @@ async function getAdminDb() {
     );
   }
 
-  return supabase;
+  return db;
 }
 
 function cleanUrlInput(val?: string): string {
