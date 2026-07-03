@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BookOpen } from 'lucide-react';
 
 interface MagazineSettings {
@@ -16,6 +16,49 @@ interface MagazineIssue {
   embed_code: string | null;
   is_published: boolean;
   published_date: string;
+}
+
+// Renders an embed code string, executing any <script> tags inside it
+function EmbedRenderer({ html }: { html: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // Clear previous content
+    el.innerHTML = '';
+
+    const template = document.createElement('div');
+    template.innerHTML = html;
+
+    // Re-clone nodes so scripts can execute
+    Array.from(template.childNodes).forEach(node => {
+      if (node.nodeName === 'SCRIPT') {
+        const script = document.createElement('script');
+        const srcNode = node as HTMLScriptElement;
+        // Copy attributes
+        Array.from(srcNode.attributes).forEach(attr => {
+          script.setAttribute(attr.name, attr.value);
+        });
+        script.textContent = srcNode.textContent;
+        el.appendChild(script);
+      } else {
+        el.appendChild(node.cloneNode(true));
+      }
+    });
+
+    // Also look for any script tags nested inside non-script elements and re-execute them
+    const innerScripts = Array.from(el.querySelectorAll('script'));
+    innerScripts.forEach(oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      newScript.textContent = oldScript.textContent;
+      oldScript.parentNode?.replaceChild(newScript, oldScript);
+    });
+  }, [html]);
+
+  return <div ref={containerRef} className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-none" />;
 }
 
 export default function MagazineClient({ 
@@ -51,12 +94,9 @@ export default function MagazineClient({
   return (
     <div className="w-full min-h-screen bg-black flex flex-col">
       {/* Featured Active Issue Player */}
-      <div className="w-full h-[70vh] md:h-[80vh] bg-black relative border-b border-neutral-900 shrink-0">
+      <div className="w-full h-[70vh] md:h-[80vh] bg-black relative border-b border-neutral-900 shrink-0 overflow-hidden">
         {activeIssue.embed_code ? (
-          <div 
-            className="w-full h-full flex-1 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-none"
-            dangerouslySetInnerHTML={{ __html: activeIssue.embed_code }}
-          />
+          <EmbedRenderer key={activeIssue.id} html={activeIssue.embed_code} />
         ) : (
           <iframe 
             src={activeUrl} 
