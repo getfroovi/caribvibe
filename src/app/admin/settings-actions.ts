@@ -69,7 +69,7 @@ export async function saveStoreSettingsAction(payload: {
   etsy_url: string;
 }) {
   try {
-    const token = await getSessionToken();
+    await getSessionToken(); // Validate admin role
     const supabase = await createClient();
     
     const cleanedPayload = {
@@ -85,13 +85,17 @@ export async function saveStoreSettingsAction(payload: {
     }
 
     if (existing && existing.length > 0) {
-      await callRpc('admin_update_store_settings', {
-        p_id: existing[0].id,
-        p_is_enabled: cleanedPayload.is_enabled,
-        p_store_url: cleanedPayload.store_url,
-        p_is_etsy_enabled: cleanedPayload.is_etsy_enabled,
-        p_etsy_url: cleanedPayload.etsy_url
-      }, token);
+      const { error: updateError } = await supabase
+        .from('store_settings')
+        .update({
+          is_enabled: cleanedPayload.is_enabled,
+          store_url: cleanedPayload.store_url,
+          is_etsy_enabled: cleanedPayload.is_etsy_enabled,
+          etsy_url: cleanedPayload.etsy_url
+        })
+        .eq('id', existing[0].id);
+
+      if (updateError) throw updateError;
     } else {
       const res = await supabase.from('store_settings').insert([cleanedPayload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
@@ -104,7 +108,7 @@ export async function saveStoreSettingsAction(payload: {
     revalidatePath('/admin/store-settings');
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: 'RPC Error: ' + (err.message || 'Server action error') };
+    return { success: false, error: 'Save Error: ' + (err.message || 'Server action error') };
   }
 }
 
@@ -114,7 +118,7 @@ export async function saveMagazineSettingsAction(payload: {
   embed_code?: string;
 }) {
   try {
-    const token = await getSessionToken();
+    await getSessionToken(); // Validate admin role
     const supabase = await createClient();
     
     const cleanedPayload = {
@@ -129,12 +133,16 @@ export async function saveMagazineSettingsAction(payload: {
     }
 
     if (existing && existing.length > 0) {
-      await callRpc('admin_update_magazine_settings', {
-        p_id: existing[0].id,
-        p_is_enabled: cleanedPayload.is_enabled,
-        p_embed_url: cleanedPayload.embed_url,
-        p_embed_code: cleanedPayload.embed_code || ''
-      }, token);
+      const { error: updateError } = await supabase
+        .from('magazine_settings')
+        .update({
+          is_enabled: cleanedPayload.is_enabled,
+          embed_url: cleanedPayload.embed_url,
+          embed_code: cleanedPayload.embed_code || ''
+        })
+        .eq('id', existing[0].id);
+
+      if (updateError) throw updateError;
     } else {
       const res = await supabase.from('magazine_settings').insert([cleanedPayload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
@@ -147,7 +155,7 @@ export async function saveMagazineSettingsAction(payload: {
     revalidatePath('/admin/magazine-settings');
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: 'RPC Error: ' + (err.message || 'Server action error') };
+    return { success: false, error: 'Save Error: ' + (err.message || 'Server action error') };
   }
 }
 
@@ -157,7 +165,7 @@ export async function saveCustomCodeAction(payload: {
   footer_code: string;
 }) {
   try {
-    const token = await getSessionToken();
+    await getSessionToken(); // Validate admin role
     const supabase = await createClient();
     
     const { data: existing, error: selectError } = await supabase.from('custom_code').select('id').limit(1);
@@ -167,12 +175,16 @@ export async function saveCustomCodeAction(payload: {
     }
 
     if (existing && existing.length > 0) {
-      await callRpc('admin_update_custom_code', {
-        p_id: existing[0].id,
-        p_header_code: payload.header_code || '',
-        p_body_top_code: payload.body_top_code || '',
-        p_footer_code: payload.footer_code || ''
-      }, token);
+      const { error: updateError } = await supabase
+        .from('custom_code')
+        .update({
+          header_code: payload.header_code || '',
+          body_top_code: payload.body_top_code || '',
+          footer_code: payload.footer_code || ''
+        })
+        .eq('id', existing[0].id);
+
+      if (updateError) throw updateError;
     } else {
       const res = await supabase.from('custom_code').insert([payload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
@@ -185,6 +197,55 @@ export async function saveCustomCodeAction(payload: {
     revalidatePath('/admin/custom-code');
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: 'RPC Error: ' + (err.message || 'Server action error') };
+    return { success: false, error: 'Save Error: ' + (err.message || 'Server action error') };
+  }
+}
+
+export async function saveHeroSlidesAction(slides: any[], deletedIds: string[]) {
+  try {
+    await getSessionToken(); // Validate admin role
+    const supabase = await createClient();
+
+    // 1. Delete removed slides
+    if (deletedIds.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('hero_slides')
+        .delete()
+        .in('id', deletedIds);
+      if (deleteError) throw deleteError;
+    }
+
+    // 2. Upsert slides
+    if (slides.length > 0) {
+      const slidesToSave = slides.map(slide => {
+        let id = slide.id;
+        if (id.startsWith('temp-')) {
+          id = id.replace('temp-', '');
+        }
+        return {
+          id,
+          title: slide.title,
+          description: slide.description || null,
+          image_url: slide.image_url,
+          series_id: slide.series_id || null,
+          link_url: slide.link_url || null,
+          button_text: slide.button_text || 'Play',
+          order_index: slide.order_index,
+          is_trailer: !!slide.is_trailer,
+          trailer_url: slide.trailer_url || null
+        };
+      });
+
+      const { error: upsertError } = await supabase
+        .from('hero_slides')
+        .upsert(slidesToSave);
+      if (upsertError) throw upsertError;
+    }
+
+    revalidatePath('/');
+    revalidatePath('/admin/hero-slider');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: 'Save Error: ' + (err.message || 'Server action error') };
   }
 }

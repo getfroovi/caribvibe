@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Trash2, GripVertical, Save } from 'lucide-react';
+import { saveHeroSlidesAction } from '@/app/admin/settings-actions';
 
 interface Slide {
   id: string;
@@ -21,6 +22,7 @@ interface Slide {
 
 export default function HeroSliderSettingsPage() {
   const [slides, setSlides] = useState<Slide[]>([]);
+  const [deletedSlideIds, setDeletedSlideIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [seriesList, setSeriesList] = useState<any[]>([]);
@@ -37,8 +39,13 @@ export default function HeroSliderSettingsPage() {
         supabase.from('series').select('id, title').order('created_at', { ascending: false })
       ]);
 
-      if (slidesRes.data) setSlides(slidesRes.data);
-      if (seriesRes.data) setSeriesList(seriesRes.data);
+      if (slidesRes.data) {
+        setSlides(slidesRes.data);
+      }
+      if (seriesRes.data) {
+        setSeriesList(seriesRes.data);
+      }
+      setDeletedSlideIds([]); // reset tracking
     } catch (err) {
       console.error(err);
       toast.error('Failed to load data');
@@ -50,10 +57,13 @@ export default function HeroSliderSettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Upsert all slides
-      const { error } = await supabase.from('hero_slides').upsert(slides);
-      if (error) throw error;
+      const res = await saveHeroSlidesAction(slides, deletedSlideIds);
+      if (!res.success) {
+        throw new Error(res.error || 'Failed to save slides');
+      }
       toast.success('Hero slides saved successfully!');
+      setDeletedSlideIds([]);
+      await fetchData();
     } catch (err: any) {
       toast.error(err.message || 'Failed to save slides');
     } finally {
@@ -62,8 +72,9 @@ export default function HeroSliderSettingsPage() {
   };
 
   const addSlide = () => {
+    const tempId = `temp-${self.crypto?.randomUUID() || Math.random().toString(36).substring(2, 15)}`;
     const newSlide: Slide = {
-      id: crypto.randomUUID(),
+      id: tempId,
       title: 'New Slide',
       description: '',
       image_url: '',
@@ -77,15 +88,10 @@ export default function HeroSliderSettingsPage() {
     setSlides([...slides, newSlide]);
   };
 
-  const removeSlide = async (index: number) => {
+  const removeSlide = (index: number) => {
     const slideToDelete = slides[index];
-    if (slideToDelete.id && !slideToDelete.id.includes('-')) {
-      // If it's a real UUID from DB, delete it from DB immediately
-      const { error } = await supabase.from('hero_slides').delete().eq('id', slideToDelete.id);
-      if (error) {
-        toast.error('Failed to delete slide');
-        return;
-      }
+    if (slideToDelete.id && !slideToDelete.id.startsWith('temp-')) {
+      setDeletedSlideIds(prev => [...prev, slideToDelete.id]);
     }
     const newSlides = slides.filter((_, i) => i !== index);
     setSlides(newSlides.map((s, i) => ({ ...s, order_index: i }))); // re-index
