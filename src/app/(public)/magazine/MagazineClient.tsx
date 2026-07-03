@@ -61,7 +61,7 @@ function EmbedRenderer({ html }: { html: string }) {
   return (
     <div 
       ref={containerRef} 
-      className="w-full h-full [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:border-none [&_iframe]:!max-w-full [&_iframe]:!max-h-full [&_a]:!block [&_a]:!w-full [&_a]:!h-full [&_a]:!max-w-full [&_a]:!max-h-full [&_div]:!w-full [&_div]:!h-full [&_div]:!max-w-full [&_div]:!max-h-full" 
+      className="w-full h-full [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:border-none [&_iframe]:!max-w-full [&_iframe]:!max-h-full [&>a]:block [&>a]:w-full [&>a]:h-full" 
     />
   );
 }
