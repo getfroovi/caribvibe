@@ -222,3 +222,67 @@ export async function saveHeroSlidesAction(slides: any[], deletedIds: string[]) 
     return { success: false, error: 'Save Error: ' + (err.message || 'Server action error') };
   }
 }
+
+export async function saveMagazineIssueAction(issue: {
+  id?: string;
+  title: string;
+  description?: string | null;
+  cover_image_url: string;
+  embed_url?: string | null;
+  embed_code?: string | null;
+  is_published: boolean;
+  published_date?: string;
+}) {
+  try {
+    await verifyAdminRole();
+    const supabase = await createClient();
+
+    const payload = {
+      title: issue.title,
+      description: issue.description || null,
+      cover_image_url: issue.cover_image_url,
+      embed_url: issue.embed_url || null,
+      embed_code: issue.embed_code || null,
+      is_published: !!issue.is_published,
+      published_date: issue.published_date || new Date().toISOString()
+    };
+
+    if (issue.id && !issue.id.startsWith('temp-')) {
+      const { error } = await supabase
+        .from('magazine_issues')
+        .update(payload)
+        .eq('id', issue.id);
+      if (error) throw error;
+    } else {
+      const { error } = await supabase
+        .from('magazine_issues')
+        .insert([payload]);
+      if (error) throw error;
+    }
+
+    revalidatePath('/magazine');
+    revalidatePath('/admin/magazine-settings');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to save issue' };
+  }
+}
+
+export async function deleteMagazineIssueAction(id: string) {
+  try {
+    await verifyAdminRole();
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('magazine_issues')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+
+    revalidatePath('/magazine');
+    revalidatePath('/admin/magazine-settings');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to delete issue' };
+  }
+}
