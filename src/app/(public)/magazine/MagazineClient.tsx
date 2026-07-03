@@ -58,7 +58,12 @@ function EmbedRenderer({ html }: { html: string }) {
     });
   }, [html]);
 
-  return <div ref={containerRef} className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-none" />;
+  return (
+    <div 
+      ref={containerRef} 
+      className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-none [&_a]:block [&_a]:w-full [&_a]:h-full [&_div]:w-full [&_div]:h-full" 
+    />
+  );
 }
 
 export default function MagazineClient({ 
