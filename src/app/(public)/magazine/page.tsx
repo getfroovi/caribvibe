@@ -27,17 +27,25 @@ export default async function MagazinePage() {
   };
   const cleanEmbedUrl = cleanIframeUrl(settings.embed_url);
 
+  // Dynamically inject absolute layout styles to guarantee the iframe renders at full scale
+  const styledEmbedCode = settings.embed_code && settings.embed_code.includes('<iframe')
+    ? settings.embed_code.replace(
+        '<iframe',
+        '<iframe style="width: 100%; height: 100%; border: none; min-height: 100%; position: absolute; top: 0; left: 0; right: 0; bottom: 0;"'
+      )
+    : settings.embed_code;
+
   return (
-    <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-black">
+    <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-black relative">
       {settings.embed_code ? (
         <div 
-          className="w-full h-full flex-1 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-none"
-          dangerouslySetInnerHTML={{ __html: settings.embed_code }}
+          className="w-full h-full flex-1 relative"
+          dangerouslySetInnerHTML={{ __html: styledEmbedCode }}
         />
       ) : (
         <iframe 
           src={cleanEmbedUrl} 
-          className="w-full h-full border-none flex-1"
+          className="absolute inset-0 w-full h-full border-none"
           title="Interactive Magazine Issue"
           allowFullScreen
         />
