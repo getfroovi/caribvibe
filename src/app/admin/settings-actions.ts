@@ -3,53 +3,25 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-async function getSessionToken() {
+async function verifyAdminRole() {
   const supabase = await createClient();
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const { data: { user }, error } = await supabase.auth.getUser();
   
-  if (error || !session?.access_token) {
+  if (error || !user) {
     throw new Error('Not authenticated. Please log in again.');
   }
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .single();
 
   if (profile?.role !== 'admin') {
     throw new Error('Unauthorized: Admin access required.');
   }
 
-  return session.access_token;
-}
-
-async function callRpc(rpcName: string, payload: any, token: string) {
-  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/${rpcName}`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!res.ok) {
-    let errMsg = res.statusText;
-    try {
-      const errBody = await res.json();
-      errMsg = errBody.message || errBody.details || errMsg;
-    } catch (e) {
-      const errText = await res.text();
-      errMsg = errText || errMsg;
-    }
-    throw new Error(errMsg);
-  }
-  
-  return true;
+  return user.id;
 }
 
 function cleanUrlInput(val?: string): string {
@@ -69,7 +41,7 @@ export async function saveStoreSettingsAction(payload: {
   etsy_url: string;
 }) {
   try {
-    await getSessionToken(); // Validate admin role
+    await verifyAdminRole(); // Validate admin role
     const supabase = await createClient();
     
     const cleanedPayload = {
@@ -118,7 +90,7 @@ export async function saveMagazineSettingsAction(payload: {
   embed_code?: string;
 }) {
   try {
-    await getSessionToken(); // Validate admin role
+    await verifyAdminRole(); // Validate admin role
     const supabase = await createClient();
     
     const cleanedPayload = {
@@ -165,7 +137,7 @@ export async function saveCustomCodeAction(payload: {
   footer_code: string;
 }) {
   try {
-    await getSessionToken(); // Validate admin role
+    await verifyAdminRole(); // Validate admin role
     const supabase = await createClient();
     
     const { data: existing, error: selectError } = await supabase.from('custom_code').select('id').limit(1);
@@ -203,7 +175,7 @@ export async function saveCustomCodeAction(payload: {
 
 export async function saveHeroSlidesAction(slides: any[], deletedIds: string[]) {
   try {
-    await getSessionToken(); // Validate admin role
+    await verifyAdminRole(); // Validate admin role
     const supabase = await createClient();
 
     // 1. Delete removed slides
