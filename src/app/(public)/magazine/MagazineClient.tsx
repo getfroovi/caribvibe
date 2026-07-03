@@ -96,12 +96,20 @@ export default function MagazineClient({
 
   const activeUrl = activeIssue.embed_code ? '' : cleanIframeUrl(activeIssue.embed_url);
 
+  // Dynamically sanitize the embed HTML to disable lightboxes and force 100% dimensions on Flowpaper
+  const sanitizedEmbedCode = activeIssue.embed_code
+    ? activeIssue.embed_code
+        .replace(/lightbox=["']true["']/gi, 'lightbox="false"')
+        .replace(/data-fp-width=["'][^"']+["']/gi, 'data-fp-width="100%"')
+        .replace(/data-fp-height=["'][^"']+["']/gi, 'data-fp-height="100%"')
+    : '';
+
   return (
     <div className="w-full min-h-screen bg-black flex flex-col">
       {/* Featured Active Issue Player */}
       <div className="w-full h-[70vh] md:h-[80vh] bg-black relative border-b border-neutral-900 shrink-0 overflow-hidden">
         {activeIssue.embed_code ? (
-          <EmbedRenderer key={activeIssue.id} html={activeIssue.embed_code} />
+          <EmbedRenderer key={activeIssue.id} html={sanitizedEmbedCode} />
         ) : (
           <iframe 
             src={activeUrl} 
