@@ -11,6 +11,7 @@ interface Slide {
   title: string;
   description: string;
   image_url: string;
+  mobile_image_url?: string | null;
   series_id: string | null;
   link_url: string | null;
   button_text: string;
@@ -47,6 +48,7 @@ export default function HeroSliderClient({ initialSlides, seriesList }: { initia
       title: 'New Slide',
       description: '',
       image_url: '',
+      mobile_image_url: '',
       series_id: null,
       link_url: '',
       button_text: 'Play',
@@ -141,7 +143,7 @@ export default function HeroSliderClient({ initialSlides, seriesList }: { initia
 
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Image / Poster URL</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Desktop Image / Poster URL</label>
                   <input
                     type="url"
                     value={slide.image_url}
@@ -149,6 +151,16 @@ export default function HeroSliderClient({ initialSlides, seriesList }: { initia
                     className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 transition-all"
                     placeholder="https://..."
                     required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Mobile Image URL (9:16 Portrait)</label>
+                  <input
+                    type="url"
+                    value={slide.mobile_image_url || ''}
+                    onChange={e => updateSlide(index, 'mobile_image_url', e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-none px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 transition-all"
+                    placeholder="https://..."
                   />
                 </div>
                 
@@ -218,14 +230,24 @@ export default function HeroSliderClient({ initialSlides, seriesList }: { initia
               </div>
             </div>
             
-            {slide.image_url && (
-              <div className="mt-8 aspect-[21/9] md:aspect-[4/1] rounded-none overflow-hidden relative border border-slate-200 transition-all group-hover:border-pink-500">
-                <img src={slide.image_url} alt="Preview" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                  <span className="text-pink-600 text-sm font-bold tracking-wider uppercase">Image Preview</span>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {slide.image_url && (
+                <div className="aspect-[21/9] md:aspect-[4/1] rounded-none overflow-hidden relative border border-slate-200 transition-all group-hover:border-pink-500">
+                  <img src={slide.image_url} alt="Desktop Preview" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                    <span className="text-pink-600 text-sm font-bold tracking-wider uppercase">Desktop Preview (21:9)</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+              {slide.mobile_image_url && (
+                <div className="aspect-[9/16] max-w-[120px] rounded-none overflow-hidden relative border border-slate-200 transition-all group-hover:border-pink-500 mx-auto md:mx-0">
+                  <img src={slide.mobile_image_url} alt="Mobile Preview" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm text-center">
+                    <span className="text-pink-600 text-[10px] font-bold tracking-wider uppercase">Mobile (9:16)</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

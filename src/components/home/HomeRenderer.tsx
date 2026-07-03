@@ -110,9 +110,15 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
               transition={{ duration: 1 }}
               className="absolute inset-0"
             >
+              {/* Desktop Background Image (21:9 aspect on md and up) */}
               <div 
-                className="absolute inset-0 bg-cover bg-center" 
+                className="hidden md:block absolute inset-0 bg-cover bg-center" 
                 style={{ backgroundImage: `url('${currentSlide?.image_url}')` }}
+              />
+              {/* Mobile Background Image (9:16 aspect below md, falls back to desktop if not set) */}
+              <div 
+                className="block md:hidden absolute inset-0 bg-cover bg-center" 
+                style={{ backgroundImage: `url('${currentSlide?.mobile_image_url || currentSlide?.image_url}')` }}
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30" />

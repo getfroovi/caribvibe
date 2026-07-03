@@ -199,6 +199,7 @@ export async function saveHeroSlidesAction(slides: any[], deletedIds: string[]) 
           title: slide.title,
           description: slide.description || null,
           image_url: slide.image_url,
+          mobile_image_url: slide.mobile_image_url || null,
           series_id: slide.series_id || null,
           link_url: slide.link_url || null,
           button_text: slide.button_text || 'Play',
