@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useState, useRef, useEffect } from 'react';
 import { PremiumModal } from './PremiumModal';
 import { useUserStore } from '@/store';
-import { Volume2, VolumeX, SkipForward } from 'lucide-react';
+import { Volume2, VolumeX, SkipForward, Play } from 'lucide-react';
 import { AdUnit } from '@/components/video/AdUnit';
 import { createClient } from '@/lib/supabase/client';
 
@@ -32,6 +32,7 @@ export function VideoPlayer({
   const [isPaywallActive, setIsPaywallActive] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [showAd, setShowAd] = useState(false);
   const [adCountdown, setAdCountdown] = useState(5);
   const playerRef = useRef<any>(null);
@@ -48,6 +49,14 @@ export function VideoPlayer({
     };
     fetchAdSettings();
   }, []);
+
+  useEffect(() => {
+    setIsPlaying(isActive);
+  }, [isActive]);
+
+  const togglePlay = () => {
+    setIsPlaying(prev => !prev);
+  };
 
   const isUserPremium = role === 'premium' || role === 'admin';
   const shouldEnforcePaywall = isPremium && !isUserPremium;
@@ -160,7 +169,10 @@ export function VideoPlayer({
 
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
-      <div className={`w-full h-full transition-all duration-1000 ease-out ${isPaywallActive ? 'blur-2xl scale-110 opacity-40 brightness-50 pointer-events-none' : ''}`}>
+      <div 
+        onClick={togglePlay}
+        className={`w-full h-full cursor-pointer relative transition-all duration-1000 ease-out ${isPaywallActive ? 'blur-2xl scale-110 opacity-40 brightness-50 pointer-events-none' : ''}`}
+      >
         
         {!isExternal && playbackId ? (
           // @ts-ignore
@@ -169,7 +181,7 @@ export function VideoPlayer({
             url={`https://stream.mux.com/${playbackId}.m3u8`}
             width="100%"
             height="100%"
-            playing={isActive && !isPaywallActive && !showAd}
+            playing={isPlaying && !isPaywallActive && !showAd}
             loop
             muted={isMuted}
             playsinline={true}
@@ -187,47 +199,46 @@ export function VideoPlayer({
             }}
           />
         ) : videoUrl ? (
-          <div 
-            className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto cursor-pointer"
-            onClick={() => {
-              const player = reactPlayerRef.current?.getInternalPlayer();
-              if (player?.play) player.play();
-              else if (player?.playVideo) player.playVideo();
-            }}
-          >
-            <GenericPlayer
-              className="react-player"
-              ref={reactPlayerRef}
-              url={ytUrl || videoUrl}
-              playing={isActive && !isPaywallActive && !showAd}
-              loop
-              muted={isMuted}
-              playsinline={true}
-              width="100%"
-              height="100%"
-              controls={false}
-              style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
-              onProgress={handleProgressReactPlayer}
-              onDuration={(d: number) => setDuration(d)}
-              config={{
-                file: {
-                  attributes: {
-                    playsInline: true,
-                    playsinline: true,
-                    webkitPlaysInline: true
-                  }
-                },
-                youtube: {
-                  playerVars: { playsinline: 1, controls: 1, loop: 1, autoplay: 1 }
-                },
-                vimeo: {
-                  playerOptions: { loop: true, playsinline: true }
+          <GenericPlayer
+            className="react-player"
+            ref={reactPlayerRef}
+            url={ytUrl || videoUrl}
+            playing={isPlaying && !isPaywallActive && !showAd}
+            loop
+            muted={isMuted}
+            playsinline={true}
+            width="100%"
+            height="100%"
+            controls={false}
+            style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
+            onProgress={handleProgressReactPlayer}
+            onDuration={(d: number) => setDuration(d)}
+            config={{
+              file: {
+                attributes: {
+                  playsInline: true,
+                  playsinline: true,
+                  webkitPlaysInline: true
                 }
-              }}
-            />
-          </div>
+              },
+              youtube: {
+                playerVars: { playsinline: 1, controls: 1, loop: 1, autoplay: 1 }
+              },
+              vimeo: {
+                playerOptions: { loop: true, playsinline: true }
+              }
+            }}
+          />
         ) : (
            <div className="w-full h-full flex items-center justify-center text-gray-500">Video Source Error</div>
+        )}
+
+        {!isPlaying && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-20 pointer-events-none">
+            <div className="bg-black/60 p-5 rounded-full text-white backdrop-blur-md transition-all transform scale-100 animate-in fade-in zoom-in-75 duration-200">
+              <Play className="w-8 h-8 fill-current text-white" />
+            </div>
+          </div>
         )}
 
       </div>
