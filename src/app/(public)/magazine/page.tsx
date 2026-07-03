@@ -1,41 +1,11 @@
-'use client';
-
-import { useState, useEffect, useMemo } from 'react';
+import { createClient } from '@/lib/supabase/server';
 import { BookOpen } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
 
-export default function MagazinePage() {
-  const [loading, setLoading] = useState(true);
-  const [settings, setSettings] = useState<{ is_enabled: boolean, embed_url: string, embed_code: string } | null>(null);
+export const revalidate = 0;
 
-  const supabase = useMemo(() => createClient(), []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 4000);
-    const fetchSettings = async () => {
-      try {
-        const { data, error } = await supabase.from('magazine_settings').select('*').limit(1).single();
-        if (data && !error) {
-          setSettings(data);
-        }
-      } catch (err) {
-        console.error('Error fetching magazine settings:', err);
-      } finally {
-        clearTimeout(timer);
-        setLoading(false);
-      }
-    };
-    
-    fetchSettings();
-  }, [supabase]);
-
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto p-8 pt-12 md:pt-24 flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+export default async function MagazinePage() {
+  const supabase = await createClient();
+  const { data: settings } = await supabase.from('magazine_settings').select('*').limit(1).single();
 
   // If magazine is disabled or neither embed option is provided
   if (!settings?.is_enabled || (!settings?.embed_url && !settings?.embed_code)) {
