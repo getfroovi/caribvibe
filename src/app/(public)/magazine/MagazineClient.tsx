@@ -48,22 +48,14 @@ export default function MagazineClient({
 
   const activeUrl = activeIssue.embed_code ? '' : cleanIframeUrl(activeIssue.embed_url);
 
-  // Dynamically inject absolute styles to prevent height collapse inside the relative container
-  const styledEmbedCode = activeIssue.embed_code && activeIssue.embed_code.includes('<iframe')
-    ? activeIssue.embed_code.replace(
-        '<iframe',
-        '<iframe style="width: 100%; height: 100%; border: none; min-height: 100%; position: absolute; top: 0; left: 0; right: 0; bottom: 0;"'
-      )
-    : activeIssue.embed_code || '';
-
   return (
     <div className="w-full min-h-screen bg-black flex flex-col">
       {/* Featured Active Issue Player */}
       <div className="w-full h-[70vh] md:h-[80vh] bg-black relative border-b border-neutral-900 shrink-0">
         {activeIssue.embed_code ? (
           <div 
-            className="w-full h-full relative"
-            dangerouslySetInnerHTML={{ __html: styledEmbedCode }}
+            className="w-full h-full flex-1 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-none"
+            dangerouslySetInnerHTML={{ __html: activeIssue.embed_code }}
           />
         ) : (
           <iframe 
