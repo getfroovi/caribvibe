@@ -41,18 +41,18 @@ export default function ShopClient({ settings }: { settings: StoreSettings | nul
   const activeUrl = cleanIframeUrl(rawUrl);
 
   return (
-    <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-white">
+    <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-black">
       
       {/* Tab Navigation (Only visible if both are enabled) */}
       {showTabs && (
-        <div className="w-full bg-slate-50 border-b border-slate-200 flex justify-center px-4 pt-4 shrink-0">
+        <div className="w-full bg-neutral-900 border-b border-neutral-800 flex justify-center px-4 pt-4 shrink-0">
           <div className="flex gap-2 max-w-sm w-full">
             <button 
               onClick={() => setActiveTab('main')}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 font-bold text-sm uppercase tracking-wider rounded-t-xl transition-all ${
                 activeTab === 'main' 
-                  ? 'bg-white text-pink-600 border-t-2 border-l border-r border-pink-500 shadow-sm relative z-10' 
-                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 border-t-2 border-transparent'
+                  ? 'bg-black text-pink-500 border-t-2 border-l border-r border-pink-500 shadow-sm relative z-10' 
+                  : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 border-t-2 border-transparent'
               }`}
             >
               <Store className="w-4 h-4" /> Official
@@ -61,8 +61,8 @@ export default function ShopClient({ settings }: { settings: StoreSettings | nul
               onClick={() => setActiveTab('etsy')}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 font-bold text-sm uppercase tracking-wider rounded-t-xl transition-all ${
                 activeTab === 'etsy' 
-                  ? 'bg-white text-[#F1641E] border-t-2 border-l border-r border-[#F1641E] shadow-sm relative z-10' 
-                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 border-t-2 border-transparent'
+                  ? 'bg-black text-[#F1641E] border-t-2 border-l border-r border-[#F1641E] shadow-sm relative z-10' 
+                  : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 border-t-2 border-transparent'
               }`}
             >
               <ShoppingBag className="w-4 h-4" /> Etsy
@@ -72,7 +72,7 @@ export default function ShopClient({ settings }: { settings: StoreSettings | nul
       )}
 
       {/* iframe Container */}
-      <div className="flex-1 w-full bg-white relative">
+      <div className="flex-1 w-full bg-black relative">
         {activeUrl ? (
           <iframe 
             src={activeUrl} 
