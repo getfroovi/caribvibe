@@ -2,31 +2,16 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
-async function getAdminDb() {
+async function getSessionToken() {
   const supabase = await createClient();
-  const { data: { session }, error: authError } = await supabase.auth.getSession();
-
-  if (authError || !session?.access_token) {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  
+  if (error || !session?.access_token) {
     throw new Error('Not authenticated. Please log in again.');
   }
 
-  // Create a fresh client with explicit Authorization header to ensure Next.js doesn't drop the JWT
-  const db = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      },
-      auth: { persistSession: false }
-    }
-  );
-
-  const { data: profile } = await db
+  const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', session.user.id)
@@ -36,16 +21,35 @@ async function getAdminDb() {
     throw new Error('Unauthorized: Admin access required.');
   }
 
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (serviceKey) {
-    return createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      serviceKey,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    );
-  }
+  return session.access_token;
+}
 
-  return db;
+async function callRpc(rpcName: string, payload: any, token: string) {
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/${rpcName}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    let errMsg = res.statusText;
+    try {
+      const errBody = await res.json();
+      errMsg = errBody.message || errBody.details || errMsg;
+    } catch (e) {
+      const errText = await res.text();
+      errMsg = errText || errMsg;
+    }
+    throw new Error(errMsg);
+  }
+  
+  return true;
 }
 
 function cleanUrlInput(val?: string): string {
@@ -65,32 +69,31 @@ export async function saveStoreSettingsAction(payload: {
   etsy_url: string;
 }) {
   try {
-    const db = await getAdminDb();
+    const token = await getSessionToken();
+    const supabase = await createClient();
+    
     const cleanedPayload = {
       ...payload,
       store_url: cleanUrlInput(payload.store_url),
       etsy_url: cleanUrlInput(payload.etsy_url),
     };
 
-    const { data: existing, error: selectError } = await db.from('store_settings').select('id').limit(1);
+    const { data: existing, error: selectError } = await supabase.from('store_settings').select('id').limit(1);
 
     if (selectError && selectError.code !== 'PGRST116') {
       return { success: false, error: selectError.message };
     }
 
     if (existing && existing.length > 0) {
-      const res = await db.rpc('admin_update_store_settings', {
+      await callRpc('admin_update_store_settings', {
         p_id: existing[0].id,
         p_is_enabled: cleanedPayload.is_enabled,
         p_store_url: cleanedPayload.store_url,
         p_is_etsy_enabled: cleanedPayload.is_etsy_enabled,
         p_etsy_url: cleanedPayload.etsy_url
-      });
-      if (res.error) {
-        return { success: false, error: 'RPC Error: Please run the updated SQL script in Supabase to enable Admin Saving. ' + res.error.message };
-      }
+      }, token);
     } else {
-      const res = await db.from('store_settings').insert([cleanedPayload]).select();
+      const res = await supabase.from('store_settings').insert([cleanedPayload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
         return { success: false, error: 'Insert blocked by RLS. Run the SQL script.' };
       }
@@ -101,7 +104,7 @@ export async function saveStoreSettingsAction(payload: {
     revalidatePath('/admin/store-settings');
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: err.message || 'Server action error' };
+    return { success: false, error: 'RPC Error: ' + (err.message || 'Server action error') };
   }
 }
 
@@ -111,30 +114,29 @@ export async function saveMagazineSettingsAction(payload: {
   embed_code?: string;
 }) {
   try {
-    const db = await getAdminDb();
+    const token = await getSessionToken();
+    const supabase = await createClient();
+    
     const cleanedPayload = {
       ...payload,
       embed_url: cleanUrlInput(payload.embed_url),
     };
 
-    const { data: existing, error: selectError } = await db.from('magazine_settings').select('id').limit(1);
+    const { data: existing, error: selectError } = await supabase.from('magazine_settings').select('id').limit(1);
 
     if (selectError && selectError.code !== 'PGRST116') {
       return { success: false, error: selectError.message };
     }
 
     if (existing && existing.length > 0) {
-      const res = await db.rpc('admin_update_magazine_settings', {
+      await callRpc('admin_update_magazine_settings', {
         p_id: existing[0].id,
         p_is_enabled: cleanedPayload.is_enabled,
         p_embed_url: cleanedPayload.embed_url,
         p_embed_code: cleanedPayload.embed_code || ''
-      });
-      if (res.error) {
-        return { success: false, error: 'RPC Error: Please run the updated SQL script in Supabase to enable Admin Saving. ' + res.error.message };
-      }
+      }, token);
     } else {
-      const res = await db.from('magazine_settings').insert([cleanedPayload]).select();
+      const res = await supabase.from('magazine_settings').insert([cleanedPayload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
         return { success: false, error: 'Insert blocked by RLS. Run the SQL script.' };
       }
@@ -145,7 +147,7 @@ export async function saveMagazineSettingsAction(payload: {
     revalidatePath('/admin/magazine-settings');
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: err.message || 'Server action error' };
+    return { success: false, error: 'RPC Error: ' + (err.message || 'Server action error') };
   }
 }
 
@@ -155,25 +157,24 @@ export async function saveCustomCodeAction(payload: {
   footer_code: string;
 }) {
   try {
-    const db = await getAdminDb();
-    const { data: existing, error: selectError } = await db.from('custom_code').select('id').limit(1);
+    const token = await getSessionToken();
+    const supabase = await createClient();
+    
+    const { data: existing, error: selectError } = await supabase.from('custom_code').select('id').limit(1);
 
     if (selectError && selectError.code !== 'PGRST116') {
       return { success: false, error: selectError.message };
     }
 
     if (existing && existing.length > 0) {
-      const res = await db.rpc('admin_update_custom_code', {
+      await callRpc('admin_update_custom_code', {
         p_id: existing[0].id,
         p_header_code: payload.header_code || '',
         p_body_top_code: payload.body_top_code || '',
         p_footer_code: payload.footer_code || ''
-      });
-      if (res.error) {
-        return { success: false, error: 'RPC Error: Please run the updated SQL script in Supabase to enable Admin Saving. ' + res.error.message };
-      }
+      }, token);
     } else {
-      const res = await db.from('custom_code').insert([payload]).select();
+      const res = await supabase.from('custom_code').insert([payload]).select();
       if (!res.error && (!res.data || res.data.length === 0)) {
         return { success: false, error: 'Insert blocked by RLS. Run the SQL script.' };
       }
@@ -184,6 +185,6 @@ export async function saveCustomCodeAction(payload: {
     revalidatePath('/admin/custom-code');
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: err.message || 'Server action error' };
+    return { success: false, error: 'RPC Error: ' + (err.message || 'Server action error') };
   }
 }
