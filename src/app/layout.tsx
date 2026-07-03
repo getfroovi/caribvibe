@@ -50,7 +50,20 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         {customCode?.header_code && (
-          <div dangerouslySetInnerHTML={{ __html: customCode.header_code }} />
+          <script
+            id="custom-header-code"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  const container = document.createElement('div');
+                  container.innerHTML = ${JSON.stringify(customCode.header_code)};
+                  while (container.firstChild) {
+                    document.head.appendChild(container.firstChild);
+                  }
+                })();
+              `
+            }}
+          />
         )}
       </head>
       <body>

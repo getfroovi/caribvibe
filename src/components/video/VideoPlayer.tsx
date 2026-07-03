@@ -188,6 +188,8 @@ export function VideoPlayer({
             style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
             onProgress={handleProgressReactPlayer}
             onDuration={(d: number) => setDuration(d)}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
             config={{
               file: {
                 attributes: {
@@ -213,6 +215,8 @@ export function VideoPlayer({
             style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
             onProgress={handleProgressReactPlayer}
             onDuration={(d: number) => setDuration(d)}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
             config={{
               file: {
                 attributes: {

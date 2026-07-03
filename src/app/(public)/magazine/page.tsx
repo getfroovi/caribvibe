@@ -36,7 +36,7 @@ export default async function MagazinePage() {
     : settings.embed_code;
 
   return (
-    <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-black relative">
+    <div className="w-full h-[calc(100dvh-128px)] md:h-[calc(100dvh-64px)] flex flex-col overflow-hidden bg-black relative">
       {settings.embed_code ? (
         <div 
           className="w-full h-full flex-1 relative"

@@ -41,7 +41,7 @@ export default function ShopClient({ settings }: { settings: StoreSettings | nul
   const activeUrl = cleanIframeUrl(rawUrl);
 
   return (
-    <div className="w-full h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-black">
+    <div className="w-full h-[calc(100dvh-128px)] md:h-[calc(100dvh-64px)] flex flex-col overflow-hidden bg-black">
       
       {/* Tab Navigation (Only visible if both are enabled) */}
       {showTabs && (
