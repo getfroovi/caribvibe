@@ -107,7 +107,7 @@ export default function MagazineClient({
   return (
     <div className="w-full min-h-screen bg-black flex flex-col">
       {/* Featured Active Issue Player */}
-      <div className="w-full h-[70vh] md:h-[80vh] bg-black relative border-b border-neutral-900 shrink-0 overflow-hidden">
+      <div className="w-full h-[calc(100dvh-128px)] md:h-[calc(100vh-64px)] bg-black relative border-b border-neutral-900 shrink-0 overflow-hidden">
         {activeIssue.embed_code ? (
           <EmbedRenderer key={activeIssue.id} html={sanitizedEmbedCode} />
         ) : (
