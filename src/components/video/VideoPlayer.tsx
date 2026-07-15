@@ -188,8 +188,7 @@ export function VideoPlayer({
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
       <div 
-        onClick={togglePlay}
-        className={`w-full h-full cursor-pointer relative transition-all duration-1000 ease-out ${isPaywallActive ? 'blur-2xl scale-110 opacity-40 brightness-50 pointer-events-none' : ''}`}
+        className={`w-full h-full relative transition-all duration-1000 ease-out ${isPaywallActive ? 'blur-2xl scale-110 opacity-40 brightness-50 pointer-events-none' : ''}`}
       >
         
         {!isExternal && playbackId ? (
@@ -202,6 +201,7 @@ export function VideoPlayer({
             playing={isPlaying && !isPaywallActive && !showAd}
             loop
             muted={isMuted}
+            controls={true}
             playsinline={true}
             style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
             onProgress={handleProgressReactPlayer}
@@ -229,7 +229,7 @@ export function VideoPlayer({
             playsinline={true}
             width="100%"
             height="100%"
-            controls={false}
+            controls={true}
             style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
             onProgress={handleProgressReactPlayer}
             onDuration={(d: number) => setDuration(d)}
@@ -244,7 +244,7 @@ export function VideoPlayer({
                 }
               },
               youtube: {
-                playerVars: { playsinline: 1, controls: 0, loop: 1, autoplay: 1, mute: 1 }
+                playerVars: { playsinline: 1, controls: 1, loop: 1, autoplay: 1, mute: 1 }
               },
               vimeo: {
                 playerOptions: { loop: true, playsinline: true, autoplay: true, muted: true }
@@ -255,25 +255,7 @@ export function VideoPlayer({
            <div className="w-full h-full flex items-center justify-center text-gray-500">Video Source Error</div>
         )}
 
-        {!isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-20 pointer-events-none">
-            <div className="bg-black/60 p-5 rounded-full text-white backdrop-blur-md transition-all transform scale-100 animate-in fade-in zoom-in-75 duration-200">
-              <Play className="w-8 h-8 fill-current text-white" />
-            </div>
-          </div>
-        )}
-
       </div>
-
-      {/* Mute/Unmute Toggle */}
-      {!isPaywallActive && (
-        <button 
-          onClick={() => setIsMuted(!isMuted)}
-          className="absolute top-6 right-4 z-40 bg-black/50 hover:bg-black/80 backdrop-blur-md p-3 rounded-full text-white transition-all shadow-xl border border-white/10"
-        >
-          {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-        </button>
-      )}
 
       {isPaywallActive && (
         <div className="absolute inset-0 z-50 flex items-center justify-center">
