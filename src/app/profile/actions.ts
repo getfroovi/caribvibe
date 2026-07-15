@@ -16,7 +16,7 @@ export async function updateProfile(formData: FormData) {
   try {
     // 1. Update profiles table
     if (fullName !== undefined || username !== undefined) {
-      const updates: { full_name?: string, username?: string } = {};
+      const updates: { full_name?: string | null, username?: string | null } = {};
       if (fullName !== undefined) updates.full_name = fullName;
       if (username !== undefined) updates.username = username || null; // null if empty to avoid unique constraint on empty strings
 

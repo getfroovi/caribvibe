@@ -10,6 +10,22 @@ import { createClient } from '@/lib/supabase/client';
 
 const GenericPlayer: any = dynamic(() => import('react-player'), { ssr: false });
 
+if (typeof window !== 'undefined') {
+  const originalPlay = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function() {
+    const promise = originalPlay.apply(this, arguments as any);
+    if (promise !== undefined) {
+      // Catch and completely swallow the harmless AbortError to prevent Next.js dev overlays
+      promise.catch((error: any) => {
+        if (error.name !== 'AbortError') {
+          throw error;
+        }
+      });
+    }
+    return promise;
+  };
+}
+
 interface VideoPlayerProps {
   playbackId?: string | null;
   videoUrl?: string | null;
@@ -226,10 +242,10 @@ export function VideoPlayer({
                 }
               },
               youtube: {
-                playerVars: { playsinline: 1, controls: 1, loop: 1, autoplay: 1 }
+                playerVars: { playsinline: 1, controls: 0, loop: 1, autoplay: 1, mute: 1 }
               },
               vimeo: {
-                playerOptions: { loop: true, playsinline: true }
+                playerOptions: { loop: true, playsinline: true, autoplay: true, muted: true }
               }
             }}
           />

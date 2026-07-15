@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Client, Environment } from 'square';
+import { SquareClient, SquareEnvironment } from 'square';
 import { createClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 
@@ -27,15 +27,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Square Plan ID is not configured in Admin Settings' }, { status: 500 });
     }
 
-    const client = new Client({
-      accessToken: squareAccessToken,
-      environment: process.env.NODE_ENV === 'production' ? Environment.Production : Environment.Sandbox,
+    const client = new SquareClient({
+      token: squareAccessToken,
+      environment: process.env.NODE_ENV === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
     });
 
     const idempotencyKey = crypto.randomUUID();
     const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    const response = await client.checkoutApi.createPaymentLink({
+    const response = await client.checkout.paymentLinks.create({
       idempotencyKey,
       checkoutOptions: {
         subscriptionPlanId: squarePlanId,
@@ -47,8 +47,8 @@ export async function POST(req: Request) {
       }
     });
 
-    if (response.result.paymentLink?.url) {
-      return NextResponse.redirect(response.result.paymentLink.url, { status: 303 });
+    if (response.paymentLink?.url) {
+      return NextResponse.redirect(response.paymentLink.url, { status: 303 });
     }
     
     return NextResponse.json({ error: 'Failed to create Square payment link' }, { status: 500 });

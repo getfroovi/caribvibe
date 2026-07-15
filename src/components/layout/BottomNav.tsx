@@ -15,7 +15,7 @@ export function BottomNav() {
     { href: '/', icon: Home, label: 'Home' },
     { href: '/feed', icon: PlaySquare, label: 'Feed' },
     { href: '/shop', icon: ShoppingBag, label: 'Shop' },
-    { href: user ? '/profile' : '/login', icon: User, label: 'Profile' },
+    // { href: user ? '/profile' : '/login', icon: User, label: 'Profile' },
   ];
 
   if (pathname.startsWith('/admin')) return null;

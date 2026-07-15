@@ -15,12 +15,12 @@ export async function POST(req: Request) {
 
     if (webhookSignatureKey !== 'test_secret') {
       const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/square/webhook`;
-      const isValid = WebhooksHelper.isValidWebhookEventSignature(
-        body,
-        signature,
-        webhookSignatureKey,
-        url
-      );
+      const isValid = await WebhooksHelper.verifySignature({
+        requestBody: body,
+        signatureHeader: signature,
+        signatureKey: webhookSignatureKey,
+        notificationUrl: url
+      });
 
       if (!isValid) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

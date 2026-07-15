@@ -14,6 +14,7 @@ interface Comment {
   user_id: string;
   profiles: {
     full_name: string | null;
+    username?: string | null;
     avatar_url: string | null;
   } | null;
 }

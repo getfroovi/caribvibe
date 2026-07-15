@@ -82,7 +82,7 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
             id: v.id,
             title: `Ep ${v.episode_number} - ${v.title}`,
             img: v.thumbnail_url || v.poster_url || series.poster_url || series.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
-            href: `/feed?seriesId=${series.id}#video-${v.id}`
+            href: `/watch/${v.id}`
           }))
         });
       }

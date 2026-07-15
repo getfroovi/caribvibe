@@ -28,6 +28,18 @@ export function FeedItem({ video, nextVideo }: FeedItemProps) {
     threshold: 0.6,
   });
 
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (inView) {
+      timeout = setTimeout(() => setIsActive(true), 250);
+    } else {
+      setIsActive(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [inView]);
+
   useEffect(() => {
     if (inView && video.series_id) {
       try {
@@ -171,7 +183,7 @@ export function FeedItem({ video, nextVideo }: FeedItemProps) {
         title={video.title}
         previewDurationSeconds={video.preview_duration_seconds}
         isPremium={video.is_premium}
-        isActive={inView}
+        isActive={isActive}
       />
 
       {/* Floating Action Buttons */}

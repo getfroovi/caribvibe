@@ -20,10 +20,6 @@ export function Navbar() {
   }, []);
 
   const handleToggleVIP = () => {
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
     setSiteMode('premium');
   };
 
@@ -75,9 +71,9 @@ export function Navbar() {
               </div>
             )}
 
-            <Link href={user ? "/profile" : "/login"} className="text-gray-300 hover:text-white transition-colors">
+            {/* <Link href={user ? "/profile" : "/login"} className="text-gray-300 hover:text-white transition-colors">
               <User className="w-5 h-5" />
-            </Link>
+            </Link> */}
           </div>
 
           <div className="md:hidden flex items-center gap-4">
@@ -127,15 +123,15 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <Link href={user ? "/profile" : "/login"} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">
+            {/* <Link href={user ? "/profile" : "/login"} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">
               <User className="w-5 h-5" />
               {user ? 'Profile' : 'Account'}
-            </Link>
+            </Link> */}
           </div>
         </motion.div>
       )}
 
-      {showAuthModal && <AuthRequiredModal onClose={() => setShowAuthModal(false)} />}
+      {/* {showAuthModal && <AuthRequiredModal onClose={() => setShowAuthModal(false)} />} */}
     </nav>
   );
 }
