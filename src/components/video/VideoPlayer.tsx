@@ -1,32 +1,11 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import MuxPlayer from '@mux/mux-player-react';
 import { PremiumModal } from './PremiumModal';
 import { useUserStore } from '@/store';
-import { Volume2, VolumeX, SkipForward, Play } from 'lucide-react';
 import { AdUnit } from '@/components/video/AdUnit';
 import { createClient } from '@/lib/supabase/client';
-
-const GenericPlayer: any = dynamic(() => import('react-player'), { ssr: false });
-import 'vimeo-video-element/react';
-import 'youtube-video-element/react';
-
-if (typeof window !== 'undefined') {
-  const originalPlay = HTMLMediaElement.prototype.play;
-  HTMLMediaElement.prototype.play = function() {
-    const promise = originalPlay.apply(this, arguments as any);
-    if (promise !== undefined) {
-      // Catch and completely swallow the harmless AbortError to prevent Next.js dev overlays
-      promise.catch((error: any) => {
-        if (error.name !== 'AbortError') {
-          throw error;
-        }
-      });
-    }
-    return promise;
-  };
-}
 
 interface VideoPlayerProps {
   playbackId?: string | null;
@@ -49,12 +28,8 @@ export function VideoPlayer({
 }: VideoPlayerProps) {
   const [isPaywallActive, setIsPaywallActive] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
   const [showAd, setShowAd] = useState(false);
   const [adCountdown, setAdCountdown] = useState(5);
-  const playerRef = useRef<any>(null);
-  const reactPlayerRef = useRef<any>(null);
   const { role, siteMode } = useUserStore();
   const [adSettings, setAdSettings] = useState<any>(null);
 
@@ -67,14 +42,6 @@ export function VideoPlayer({
     };
     fetchAdSettings();
   }, []);
-
-  useEffect(() => {
-    setIsPlaying(isActive);
-  }, [isActive]);
-
-  const togglePlay = () => {
-    setIsPlaying(prev => !prev);
-  };
 
   const isUserPremium = role === 'premium' || role === 'admin';
   const shouldEnforcePaywall = isPremium && !isUserPremium;
@@ -91,7 +58,6 @@ export function VideoPlayer({
     return () => clearTimeout(timeout);
   }, [isActive, isExternal, shouldEnforcePaywall, isPaywallActive, previewDurationSeconds]);
 
-  const [duration, setDuration] = useState<number | null>(null);
   const [adsState, setAdsState] = useState({ first: false, mid: false, last: false });
   const [activeSeconds, setActiveSeconds] = useState(0);
 
@@ -116,23 +82,15 @@ export function VideoPlayer({
       setAdsState(prev => ({ ...prev, [key]: true }));
     };
 
-    // 1. After 30 seconds when the video starts
+    // Trigger ad after 30 seconds
     if (!adsState.first && activeSeconds >= 30) {
       trigger('first');
     }
-    // 2. Mid-way the duration of the video
-    else if (!adsState.mid && duration && activeSeconds >= (duration / 2)) {
+    // Fallback mid-roll ad after 90 seconds
+    else if (!adsState.mid && activeSeconds >= 90) {
       trigger('mid');
     }
-    // Fallback if duration is unknown (e.g. YouTube iframe)
-    else if (!adsState.mid && !duration && activeSeconds >= 90) {
-      trigger('mid');
-    }
-    // 3. 60 seconds before the video ends
-    else if (!adsState.last && duration && duration > 60 && activeSeconds >= (duration - 60)) {
-      trigger('last');
-    }
-  }, [activeSeconds, duration, adsState, isActive, isPaywallActive, showAd, siteMode]);
+  }, [activeSeconds, adsState, isActive, isPaywallActive, showAd, siteMode]);
 
   // Reset state when video changes (becomes inactive)
   useEffect(() => {
@@ -151,7 +109,7 @@ export function VideoPlayer({
     return () => clearTimeout(timer);
   }, [showAd, adCountdown]);
 
-  const handleTimeUpdate = (e: Event) => {
+  const handleMuxTimeUpdate = (e: Event) => {
     const target = e.target as HTMLMediaElement;
     if (shouldEnforcePaywall && target.currentTime >= previewDurationSeconds) {
       if (!isPaywallActive) {
@@ -161,100 +119,107 @@ export function VideoPlayer({
     }
   };
 
-  const handleProgressReactPlayer = (state: any) => {
-    const playedSeconds = state.playedSeconds;
-    if (shouldEnforcePaywall && playedSeconds >= previewDurationSeconds) {
-      if (!isPaywallActive) {
-        setIsPaywallActive(true);
-      }
+  const getVimeoId = (url?: string | null) => {
+    if (!url) return '';
+    const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/)|(album\/\d+\/video\/))?(\d+)?([^\s]*)/;
+    const match = url.match(regExp);
+    if (match && match[6]) {
+      return match[6];
     }
+    const parts = url.split('vimeo.com/');
+    if (parts.length > 1) {
+      return parts[1].split('?')[0].split('/')[0];
+    }
+    return '';
   };
 
-  const getFormattedUrl = (url?: string | null) => {
-    if (!url) return null;
-    if (url.includes('youtube.com/shorts/')) {
-      const id = url.split('shorts/')[1].split('?')[0];
-      return `https://www.youtube.com/watch?v=${id}`;
+  const getYoutubeId = (url?: string | null) => {
+    if (!url) return '';
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2] && match[2].length === 11) {
+      return match[2];
     }
-    return url;
+    return '';
   };
 
   if (!mounted) return <div className="w-full h-full bg-black animate-pulse" />;
 
-  const ytUrl = getFormattedUrl(videoUrl);
-  const ytId = ytUrl?.split('v=')[1]?.split('&')[0];
-  const vimeoId = videoUrl?.split('vimeo.com/')[1]?.split('?')[0];
+  const renderPlayer = () => {
+    // If Mux stream
+    if (!isExternal && playbackId) {
+      return (
+        <MuxPlayer
+          playbackId={playbackId}
+          metadata={{ video_id: playbackId, video_title: title }}
+          className="w-full h-full object-contain"
+          autoPlay={isActive ? "any" : false}
+          controls={true}
+          muted={true}
+          loop={true}
+          streamType="on-demand"
+          onTimeUpdate={handleMuxTimeUpdate}
+        />
+      );
+    }
+
+    // If Vimeo video
+    if (videoType === 'vimeo' || (videoUrl && videoUrl.includes('vimeo.com'))) {
+      const vimeoId = getVimeoId(videoUrl);
+      const embedSrc = `https://player.vimeo.com/video/${vimeoId}?autoplay=${isActive ? 1 : 0}&loop=1&muted=1&controls=1`;
+      return (
+        <iframe
+          src={embedSrc}
+          className="w-full h-full border-none absolute inset-0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+        />
+      );
+    }
+
+    // If YouTube video
+    if (videoType === 'youtube' || (videoUrl && (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')))) {
+      const ytId = getYoutubeId(videoUrl);
+      const embedSrc = `https://www.youtube.com/embed/${ytId}?autoplay=${isActive ? 1 : 0}&loop=1&mute=1&controls=1&playlist=${ytId}`;
+      return (
+        <iframe
+          src={embedSrc}
+          className="w-full h-full border-none absolute inset-0"
+          allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      );
+    }
+
+    // Fallback standard HTML5 video tag
+    if (videoUrl) {
+      return (
+        <video
+          src={videoUrl}
+          controls={true}
+          loop={true}
+          muted={true}
+          autoPlay={isActive}
+          playsInline={true}
+          className="w-full h-full object-contain"
+          onTimeUpdate={handleMuxTimeUpdate}
+        />
+      );
+    }
+
+    return (
+      <div className="w-full h-full flex items-center justify-center text-gray-500">
+        Video source not found
+      </div>
+    );
+  };
 
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
       <div 
         className={`w-full h-full relative transition-all duration-1000 ease-out ${isPaywallActive ? 'blur-2xl scale-110 opacity-40 brightness-50 pointer-events-none' : ''}`}
       >
-        
-        {!isExternal && playbackId ? (
-          // @ts-ignore
-          <GenericPlayer
-            ref={reactPlayerRef}
-            url={`https://stream.mux.com/${playbackId}.m3u8`}
-            width="100%"
-            height="100%"
-            playing={isPlaying && !isPaywallActive && !showAd}
-            loop
-            muted={isMuted}
-            controls={true}
-            playsinline={true}
-            style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
-            onProgress={handleProgressReactPlayer}
-            onDuration={(d: number) => setDuration(d)}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            config={{
-              file: {
-                attributes: {
-                  playsInline: true,
-                  playsinline: true,
-                  webkitPlaysInline: true
-                }
-              }
-            }}
-          />
-        ) : videoUrl ? (
-          <GenericPlayer
-            className="react-player"
-            ref={reactPlayerRef}
-            url={ytUrl || videoUrl}
-            playing={isPlaying && !isPaywallActive && !showAd}
-            loop
-            muted={isMuted}
-            playsinline={true}
-            width="100%"
-            height="100%"
-            controls={true}
-            style={{ pointerEvents: isPaywallActive ? 'none' : 'auto' }}
-            onProgress={handleProgressReactPlayer}
-            onDuration={(d: number) => setDuration(d)}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            config={{
-              file: {
-                attributes: {
-                  playsInline: true,
-                  playsinline: true,
-                  webkitPlaysInline: true
-                }
-              },
-              youtube: {
-                playerVars: { playsinline: 1, controls: 1, loop: 1, autoplay: 1, mute: 1 }
-              },
-              vimeo: {
-                playerOptions: { loop: true, playsinline: true, autoplay: true, muted: true }
-              }
-            }}
-          />
-        ) : (
-           <div className="w-full h-full flex items-center justify-center text-gray-500">Video Source Error</div>
-        )}
-
+        {renderPlayer()}
       </div>
 
       {isPaywallActive && (
@@ -291,7 +256,7 @@ export function VideoPlayer({
                 onClick={() => setShowAd(false)}
                 className="px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:scale-105 transition-transform flex items-center gap-2"
               >
-                Skip Ad <SkipForward className="w-4 h-4" />
+                Skip Ad
               </button>
             )}
           </div>
