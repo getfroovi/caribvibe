@@ -39,10 +39,17 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
 
   // Helper to find the first episode watch link of a series
   const getSeriesFirstEpisodeHref = (seriesId: string) => {
+    const series = filteredSeriesList.find(s => s.id === seriesId);
     const episodes = (filteredVideosList || [])
       .filter(v => v.series_id === seriesId)
       .sort((a, b) => a.episode_number - b.episode_number);
-    return episodes.length > 0 ? `/watch/${episodes[0].id}` : `/series/${seriesId}`;
+    if (episodes.length > 0) {
+      if (series?.slug) {
+        return `/watch/${series.slug}/${episodes[0].slug}`;
+      }
+      return `/watch/${episodes[0].slug}`;
+    }
+    return `/series/${seriesId}`;
   };
 
   // 1. Trending Now Row (Series & Standalone Videos)
@@ -122,7 +129,7 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
             id: v.id,
             title: `Ep ${v.episode_number} - ${v.title}`,
             img: v.thumbnail_url || v.poster_url || series.poster_url || series.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
-            href: `/watch/${v.id}`
+            href: series.slug ? `/watch/${series.slug}/${v.slug}` : `/watch/${v.slug}`
           }))
         });
       }

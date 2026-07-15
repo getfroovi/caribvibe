@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { ArrowLeft, Play, SkipBack, SkipForward } from 'lucide-react';
 import { useUserStore } from '@/store';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MuxPlayer from '@mux/mux-player-react';
+import { AdUnit } from '@/components/video/AdUnit';
+import { createClient } from '@/lib/supabase/client';
 
 if (typeof window !== 'undefined') {
   const originalPlay = HTMLMediaElement.prototype.play;
@@ -34,16 +36,33 @@ interface WatchClientProps {
 }
 
 export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, suggestedSeries }: WatchClientProps) {
-  const { role } = useUserStore();
+  const { role, siteMode } = useUserStore();
   const [mounted, setMounted] = useState(false);
   const [isPaywallActive, setIsPaywallActive] = useState(false);
 
+  // Ads state (same as feed player)
+  const [showAd, setShowAd] = useState(false);
+  const [adCountdown, setAdCountdown] = useState(5);
+  const [adsState, setAdsState] = useState({ first: false, mid: false, last: false });
+  const [activeSeconds, setActiveSeconds] = useState(0);
+  const [adSettings, setAdSettings] = useState<any>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  const muxPlayerRef = useRef<any>(null);
+
   useEffect(() => {
     setMounted(true);
+    const fetchAdSettings = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('ad_settings').select('*').limit(1).single();
+      if (data) setAdSettings(data);
+    };
+    fetchAdSettings();
   }, []);
 
   const isUserPremium = role === 'premium' || role === 'admin';
   const shouldEnforcePaywall = video.is_premium && !isUserPremium;
+  const isExternal = video.video_type === 'youtube' || video.video_type === 'vimeo' || (video.video_url && (video.video_url.includes('vimeo.com') || video.video_url.includes('youtube.com') || video.video_url.includes('youtu.be')));
 
   let finalUrl = video.video_url;
   if (finalUrl) {
@@ -62,14 +81,59 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
   // Fallback paywall timer for native iframes
   useEffect(() => {
     let timeout: NodeJS.Timeout;
-    const isExternal = video.video_type === 'youtube' || video.video_type === 'vimeo' || (finalUrl && (finalUrl.includes('vimeo.com') || finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')));
     if (isExternal && shouldEnforcePaywall && !isPaywallActive) {
       timeout = setTimeout(() => {
         setIsPaywallActive(true);
       }, video.preview_duration_seconds * 1000);
     }
     return () => clearTimeout(timeout);
-  }, [shouldEnforcePaywall, isPaywallActive, video.preview_duration_seconds, finalUrl, video.video_type]);
+  }, [shouldEnforcePaywall, isPaywallActive, video.preview_duration_seconds, finalUrl, video.video_type, isExternal]);
+
+  // Track active viewing seconds to trigger ads (same as feed player)
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPlaying && !isPaywallActive && !showAd) {
+      interval = setInterval(() => {
+        setActiveSeconds(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, isPaywallActive, showAd]);
+
+  // Trigger ads based on site mode and elapsed time (same as feed player)
+  useEffect(() => {
+    if (siteMode !== 'free' || isPaywallActive || showAd) return;
+
+    const trigger = (key: keyof typeof adsState) => {
+      setShowAd(true);
+      setAdCountdown(5);
+      setAdsState(prev => ({ ...prev, [key]: true }));
+    };
+
+    // Trigger first ad after 30 seconds
+    if (!adsState.first && activeSeconds >= 30) {
+      trigger('first');
+    }
+    // Trigger mid-roll ad after 90 seconds
+    else if (!adsState.mid && activeSeconds >= 90) {
+      trigger('mid');
+    }
+  }, [activeSeconds, adsState, isPaywallActive, showAd, siteMode]);
+
+  // Reset ad timer state when active video changes
+  useEffect(() => {
+    setAdsState({ first: false, mid: false, last: false });
+    setActiveSeconds(0);
+  }, [video.id]);
+
+  // Ad Countdown timer
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showAd && adCountdown > 0) {
+      timer = setTimeout(() => setAdCountdown(prev => prev - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [showAd, adCountdown]);
 
   const getVimeoId = (url?: string | null) => {
     if (!url) return '';
@@ -95,7 +159,85 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
     return '';
   };
 
+  const getEpisodeHref = (ep: any) => {
+    if (series?.slug && ep?.slug) {
+      return `/watch/${series.slug}/${ep.slug}`;
+    }
+    return `/watch/${ep.slug || ep.id}`;
+  };
+
   if (!mounted) return <div className="min-h-screen bg-black" />;
+
+  const renderPlayer = () => {
+    if (!isExternal && video.mux_playback_id) {
+      return (
+        <MuxPlayer
+          ref={muxPlayerRef}
+          playbackId={video.mux_playback_id}
+          metadata={{ video_id: video.id, video_title: video.title }}
+          className="w-full h-full object-contain"
+          autoPlay={true}
+          controls
+          paused={showAd}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onTimeUpdate={(e: any) => {
+            const playedSeconds = e.currentTarget.currentTime;
+            if (shouldEnforcePaywall && playedSeconds >= video.preview_duration_seconds) {
+              setIsPaywallActive(true);
+            }
+          }}
+        />
+      );
+    }
+
+    if (finalUrl && (video.video_type === 'vimeo' || finalUrl.includes('vimeo.com'))) {
+      return (
+        <iframe
+          src={`https://player.vimeo.com/video/${getVimeoId(finalUrl)}?autoplay=1&muted=0&controls=1`}
+          className="w-full h-full border-none absolute inset-0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+        />
+      );
+    }
+
+    if (finalUrl && (video.video_type === 'youtube' || finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be'))) {
+      return (
+        <iframe
+          src={`https://www.youtube.com/embed/${getYoutubeId(finalUrl)}?autoplay=1&mute=0&controls=1`}
+          className="w-full h-full border-none absolute inset-0"
+          allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      );
+    }
+
+    if (finalUrl) {
+      return (
+        <video
+          src={finalUrl}
+          controls={true}
+          autoPlay={true}
+          className="w-full h-full object-contain"
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onTimeUpdate={(e: any) => {
+            const playedSeconds = e.currentTarget.currentTime;
+            if (shouldEnforcePaywall && playedSeconds >= video.preview_duration_seconds) {
+              setIsPaywallActive(true);
+            }
+          }}
+        />
+      );
+    }
+
+    return (
+      <div className="w-full h-full flex items-center justify-center text-gray-500">
+        Video source not found
+      </div>
+    );
+  };
 
   return (
     <div className="bg-black min-h-screen text-white pt-20 pb-20">
@@ -129,52 +271,43 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
                 </div>
               ) : null}
 
-              {video.mux_playback_id ? (
-                <MuxPlayer
-                  playbackId={video.mux_playback_id}
-                  metadata={{ video_id: video.id, video_title: video.title }}
-                  className="w-full h-full object-contain"
-                  autoPlay="any"
-                  controls
-                  onTimeUpdate={(e: any) => {
-                    const playedSeconds = e.currentTarget.currentTime;
-                    if (shouldEnforcePaywall && playedSeconds >= video.preview_duration_seconds) {
-                      setIsPaywallActive(true);
-                    }
-                  }}
-                />
-              ) : finalUrl && (video.video_type === 'vimeo' || finalUrl.includes('vimeo.com')) ? (
-                <iframe
-                  src={`https://player.vimeo.com/video/${getVimeoId(finalUrl)}?autoplay=1&muted=0&controls=1`}
-                  className="w-full h-full border-none absolute inset-0"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : finalUrl && (video.video_type === 'youtube' || finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')) ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${getYoutubeId(finalUrl)}?autoplay=1&mute=0&controls=1`}
-                  className="w-full h-full border-none absolute inset-0"
-                  allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : finalUrl ? (
-                <video
-                  src={finalUrl}
-                  controls={true}
-                  autoPlay={true}
-                  className="w-full h-full object-contain"
-                  onTimeUpdate={(e: any) => {
-                    const playedSeconds = e.currentTarget.currentTime;
-                    if (shouldEnforcePaywall && playedSeconds >= video.preview_duration_seconds) {
-                      setIsPaywallActive(true);
-                    }
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  Video source not found
+              {/* Show Ad space or standard video player */}
+              {showAd ? (
+                <div className="absolute inset-0 z-45 flex flex-col items-center justify-center bg-black/95">
+                  <p className="text-pink-500 font-bold tracking-widest uppercase text-xs mb-4 shadow-xl">Advertisement</p>
+                  
+                  {adSettings?.is_enabled && adSettings?.google_ad_client && adSettings?.video_ad_slot ? (
+                    <div className="w-full max-w-[336px] bg-black rounded overflow-hidden">
+                      <AdUnit 
+                        client={adSettings.google_ad_client} 
+                        slot={adSettings.video_ad_slot} 
+                        format="rectangle"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-[80%] max-w-[300px] h-[250px] bg-white/10 border border-white/20 rounded-xl flex items-center justify-center animate-pulse shadow-2xl">
+                      <span className="text-gray-400 font-bold">Ad Space</span>
+                    </div>
+                  )}
+                  
+                  <div className="absolute bottom-10 flex flex-col items-center">
+                    {adCountdown > 0 ? (
+                      <div className="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white font-bold text-sm">
+                        Skip in {adCountdown}s
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={() => setShowAd(false)}
+                        className="px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:scale-105 transition-transform flex items-center gap-2"
+                      >
+                        Skip Ad
+                      </button>
+                    )}
+                  </div>
                 </div>
-              )}
+              ) : null}
+
+              {renderPlayer()}
             </div>
 
             {/* Video Info */}
@@ -198,7 +331,7 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
               {(prevVideo || nextVideo) && (
                 <div className="flex items-center justify-between py-6 border-t border-zinc-800">
                   {prevVideo ? (
-                    <Link href={`/watch/${prevVideo.id}`}>
+                    <Link href={getEpisodeHref(prevVideo)}>
                       <Button variant="ghost" className="text-gray-300 hover:text-white pl-0">
                         <SkipBack className="w-5 h-5 mr-2" /> 
                         <div className="text-left hidden sm:block">
@@ -210,7 +343,7 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
                   ) : <div />}
                   
                   {nextVideo ? (
-                    <Link href={`/watch/${nextVideo.id}`}>
+                    <Link href={getEpisodeHref(nextVideo)}>
                       <Button variant="ghost" className="text-gray-300 hover:text-white pr-0">
                         <div className="text-right hidden sm:block">
                           <div className="text-xs text-pink-500 font-bold uppercase tracking-wider">Next Episode</div>
@@ -238,7 +371,7 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
                   {allEpisodes.map((ep) => (
                     <Link 
                       key={ep.id} 
-                      href={`/watch/${ep.id}`}
+                      href={getEpisodeHref(ep)}
                       className={`flex gap-3 p-2 rounded-lg transition-colors ${ep.id === video.id ? 'bg-zinc-800' : 'hover:bg-zinc-900'}`}
                     >
                       <div className="relative w-24 h-16 rounded-md overflow-hidden flex-shrink-0 bg-zinc-800">

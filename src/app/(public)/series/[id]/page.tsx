@@ -47,7 +47,7 @@ export default async function SeriesDetailPage({
             <span className="font-bold">{series.category}</span>
           </div>
           <p className="text-gray-300 text-base md:text-lg mb-6 leading-relaxed max-w-2xl font-medium">{series.description}</p>
-          <Link href={episodes && episodes.length > 0 ? `/watch/${episodes[0].id}` : '#'}>
+          <Link href={episodes && episodes.length > 0 ? (series.slug ? `/watch/${series.slug}/${episodes[0].slug}` : `/watch/${episodes[0].slug}`) : '#'}>
             <Button size="lg" className="bg-white text-black hover:bg-gray-200 font-bold px-8 h-12 rounded-md text-base transition-transform hover:scale-105">
               <Play className="w-5 h-5 mr-2 fill-black" /> Play Episode 1
             </Button>
@@ -63,7 +63,7 @@ export default async function SeriesDetailPage({
             {episodes.map((ep) => (
               <Link 
                 key={ep.id} 
-                href={`/watch/${ep.id}`}
+                href={series.slug ? `/watch/${series.slug}/${ep.slug}` : `/watch/${ep.slug}`}
                 className="flex items-center gap-4 p-3 bg-zinc-900/50 hover:bg-zinc-800 rounded-xl transition group"
               >
                 <div className="relative w-32 h-20 bg-zinc-800 rounded-lg overflow-hidden flex-shrink-0">
