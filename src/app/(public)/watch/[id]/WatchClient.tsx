@@ -1,14 +1,11 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ArrowLeft, Play, SkipBack, SkipForward } from 'lucide-react';
 import { useUserStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import MuxPlayer from '@mux/mux-player-react';
-
-const GenericPlayer: any = dynamic(() => import('react-player'), { ssr: false });
 
 if (typeof window !== 'undefined') {
   const originalPlay = HTMLMediaElement.prototype.play;
@@ -40,7 +37,6 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
   const { role } = useUserStore();
   const [mounted, setMounted] = useState(false);
   const [isPaywallActive, setIsPaywallActive] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -48,16 +44,6 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
 
   const isUserPremium = role === 'premium' || role === 'admin';
   const shouldEnforcePaywall = video.is_premium && !isUserPremium;
-
-  const handleProgress = (state: any) => {
-    if (shouldEnforcePaywall && state.playedSeconds >= video.preview_duration_seconds) {
-      if (!isPaywallActive) {
-        setIsPaywallActive(true);
-      }
-    }
-  };
-
-  if (!mounted) return <div className="min-h-screen bg-black" />;
 
   let finalUrl = video.video_url;
   if (finalUrl) {
@@ -72,6 +58,44 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
       }
     }
   }
+
+  // Fallback paywall timer for native iframes
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    const isExternal = video.video_type === 'youtube' || video.video_type === 'vimeo' || (finalUrl && (finalUrl.includes('vimeo.com') || finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')));
+    if (isExternal && shouldEnforcePaywall && !isPaywallActive) {
+      timeout = setTimeout(() => {
+        setIsPaywallActive(true);
+      }, video.preview_duration_seconds * 1000);
+    }
+    return () => clearTimeout(timeout);
+  }, [shouldEnforcePaywall, isPaywallActive, video.preview_duration_seconds, finalUrl, video.video_type]);
+
+  const getVimeoId = (url?: string | null) => {
+    if (!url) return '';
+    const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/)|(album\/\d+\/video\/))?(\d+)?([^\s]*)/;
+    const match = url.match(regExp);
+    if (match && match[6]) {
+      return match[6];
+    }
+    const parts = url.split('vimeo.com/');
+    if (parts.length > 1) {
+      return parts[1].split('?')[0].split('/')[0];
+    }
+    return '';
+  };
+
+  const getYoutubeId = (url?: string | null) => {
+    if (!url) return '';
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2] && match[2].length === 11) {
+      return match[2];
+    }
+    return '';
+  };
+
+  if (!mounted) return <div className="min-h-screen bg-black" />;
 
   return (
     <div className="bg-black min-h-screen text-white pt-20 pb-20">
@@ -112,23 +136,38 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
                   className="w-full h-full object-contain"
                   autoPlay="any"
                   controls
-                  onTimeUpdate={(e: any) => handleProgress({ playedSeconds: e.currentTarget.currentTime })}
+                  onTimeUpdate={(e: any) => {
+                    const playedSeconds = e.currentTarget.currentTime;
+                    if (shouldEnforcePaywall && playedSeconds >= video.preview_duration_seconds) {
+                      setIsPaywallActive(true);
+                    }
+                  }}
+                />
+              ) : finalUrl && (video.video_type === 'vimeo' || finalUrl.includes('vimeo.com')) ? (
+                <iframe
+                  src={`https://player.vimeo.com/video/${getVimeoId(finalUrl)}?autoplay=1&muted=0&controls=1`}
+                  className="w-full h-full border-none absolute inset-0"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : finalUrl && (video.video_type === 'youtube' || finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')) ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${getYoutubeId(finalUrl)}?autoplay=1&mute=0&controls=1`}
+                  className="w-full h-full border-none absolute inset-0"
+                  allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
                 />
               ) : finalUrl ? (
-                <GenericPlayer
-                  className="react-player"
-                  url={finalUrl}
-                  width="100%"
-                  height="100%"
+                <video
+                  src={finalUrl}
                   controls={true}
-                  playing={isPlaying}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                  playsinline={true}
-                  onProgress={handleProgress}
-                  config={{
-                    youtube: { playerVars: { playsinline: 1 } },
-                    vimeo: { playerOptions: { playsinline: true } }
+                  autoPlay={true}
+                  className="w-full h-full object-contain"
+                  onTimeUpdate={(e: any) => {
+                    const playedSeconds = e.currentTarget.currentTime;
+                    if (shouldEnforcePaywall && playedSeconds >= video.preview_duration_seconds) {
+                      setIsPaywallActive(true);
+                    }
                   }}
                 />
               ) : (
