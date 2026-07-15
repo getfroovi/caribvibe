@@ -37,34 +37,74 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
 
   const seriesRows: any[] = [];
 
-  if (filteredSeriesList && filteredSeriesList.length > 0) {
-    // 1. Trending Series Row
-    const trendingSeries = filteredSeriesList.filter(s => s.category === 'Trending Now' || !s.category);
-    if (trendingSeries.length > 0) {
-      seriesRows.push({
-        title: 'Trending Now',
-        items: trendingSeries.map(series => ({
-          id: series.id,
-          title: series.title,
-          img: series.poster_url || series.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
-          href: `/series/${series.id}`
-        }))
-      });
-    }
+  // Helper to find the first episode watch link of a series
+  const getSeriesFirstEpisodeHref = (seriesId: string) => {
+    const episodes = (filteredVideosList || [])
+      .filter(v => v.series_id === seriesId)
+      .sort((a, b) => a.episode_number - b.episode_number);
+    return episodes.length > 0 ? `/watch/${episodes[0].id}` : `/series/${seriesId}`;
+  };
 
-    // 2. New Releases Row
-    const newReleases = [...filteredSeriesList].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    if (newReleases.length > 0) {
-      seriesRows.push({
-        title: 'New Releases',
-        items: newReleases.map(series => ({
-          id: series.id,
-          title: series.title,
-          img: series.poster_url || series.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
-          href: `/series/${series.id}`
-        }))
-      });
-    }
+  // 1. Trending Now Row (Series & Standalone Videos)
+  const trendingSeries = filteredSeriesList.filter(s => s.category === 'Trending Now' || !s.category);
+  const trendingVideos = filteredVideosList.filter(v => v.category === 'Trending Now' && !v.series_id);
+
+  const trendingItems = [
+    ...trendingSeries.map(s => ({
+      id: s.id,
+      title: s.title,
+      img: s.poster_url || s.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
+      href: `/series/${s.id}`,
+      type: 'series',
+      created: new Date(s.created_at).getTime()
+    })),
+    ...trendingVideos.map(v => ({
+      id: v.id,
+      title: v.title,
+      img: v.thumbnail_url || v.poster_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
+      href: `/watch/${v.id}`,
+      type: 'video',
+      created: new Date(v.created_at).getTime()
+    }))
+  ].sort((a, b) => b.created - a.created);
+
+  if (trendingItems.length > 0) {
+    seriesRows.push({
+      title: 'Trending Now',
+      items: trendingItems
+    });
+  }
+
+  // 2. New Releases Row (Series & Standalone Videos)
+  const newSeries = [...filteredSeriesList].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const newVideos = [...filteredVideosList]
+    .filter(v => !v.series_id)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  const newReleaseItems = [
+    ...newSeries.map(s => ({
+      id: s.id,
+      title: s.title,
+      img: s.poster_url || s.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
+      href: `/series/${s.id}`,
+      type: 'series',
+      date: new Date(s.created_at).getTime()
+    })),
+    ...newVideos.map(v => ({
+      id: v.id,
+      title: v.title,
+      img: v.thumbnail_url || v.poster_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
+      href: `/watch/${v.id}`,
+      type: 'video',
+      date: new Date(v.created_at).getTime()
+    }))
+  ].sort((a, b) => b.date - a.date);
+
+  if (newReleaseItems.length > 0) {
+    seriesRows.push({
+      title: 'New Releases',
+      items: newReleaseItems
+    });
   }
 
   // 3. Series by Name Rows (Episodes)
@@ -146,21 +186,23 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
                   transition={{ delay: 0.5 }}
                   className="flex items-center gap-4"
                 >
-                  {currentSlide?.is_trailer ? (
+                  <Link href={currentSlide?.series_id ? getSeriesFirstEpisodeHref(currentSlide.series_id) : (currentSlide?.link_url || '#')}>
+                    <Button size="lg" className="bg-white text-black hover:bg-gray-200 font-bold px-6 md:px-8 h-12 rounded-md text-base transition-transform hover:scale-105">
+                      <Play className="w-5 h-5 mr-2 fill-black" /> Watch Now
+                    </Button>
+                  </Link>
+
+                  {currentSlide?.is_trailer && currentSlide?.trailer_url && (
                     <Button 
                       onClick={() => setIsTrailerModalOpen(true)}
                       size="lg" 
-                      className="bg-white text-black hover:bg-gray-200 font-bold px-6 md:px-8 h-12 rounded-md text-base transition-transform hover:scale-105"
+                      variant="outline"
+                      className="bg-white/20 border-transparent backdrop-blur-md text-white hover:bg-white/30 h-12 px-6 md:px-8 rounded-md text-base transition-transform hover:scale-105"
                     >
-                      <Play className="w-5 h-5 mr-2 fill-black" /> Watch Trailer
+                      <Play className="w-5 h-5 mr-2 fill-white" /> Watch Trailer
                     </Button>
-                  ) : (
-                    <Link href={currentSlide?.series_id ? `/feed?seriesId=${currentSlide.series_id}` : (currentSlide?.link_url || '#')}>
-                      <Button size="lg" className="bg-white text-black hover:bg-gray-200 font-bold px-6 md:px-8 h-12 rounded-md text-base transition-transform hover:scale-105">
-                        <Play className="w-5 h-5 mr-2 fill-black" /> Watch Now
-                      </Button>
-                    </Link>
                   )}
+
                   {currentSlide?.series_id && (
                     <Link href={`/series/${currentSlide.series_id}`}>
                       <Button size="lg" variant="outline" className="bg-white/20 border-transparent backdrop-blur-md text-white hover:bg-white/30 h-12 px-6 md:px-8 rounded-md text-base transition-transform hover:scale-105">
@@ -196,7 +238,7 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
                   {featuredSeries ? (featuredSeries.description || 'Watch the latest exclusive content.') : 'When a mysterious traveler arrives at the most exclusive resort in the Caribbean, secrets begin to wash ashore.'}
                 </p>
                 <div className="flex items-center gap-4">
-                  <Link href={featuredSeries ? `/feed?seriesId=${featuredSeries.id}` : '/feed'}>
+                  <Link href={featuredSeries ? getSeriesFirstEpisodeHref(featuredSeries.id) : '#'}>
                     <Button size="lg" className="bg-white text-black hover:bg-gray-200 font-bold px-6 md:px-8 h-12 rounded-md text-base transition-transform hover:scale-105">
                       <Play className="w-5 h-5 mr-2 fill-black" /> Play
                     </Button>

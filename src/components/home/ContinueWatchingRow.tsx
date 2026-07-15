@@ -25,7 +25,7 @@ export function ContinueWatchingRow({ seriesList, videosList }: { seriesList: an
             title: series.title,
             epTitle: `Ep ${video.episode_number} - ${video.title}`,
             img: video.thumbnail_url || video.poster_url || series.poster_url || series.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
-            href: `/feed?seriesId=${series.id}#video-${video.id}`
+            href: `/watch/${video.id}`
           };
         }).filter(Boolean);
         setHistoryItems(mapped);
