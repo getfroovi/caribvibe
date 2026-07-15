@@ -106,18 +106,22 @@ export default function MagazineClient({
 
   return (
     <div className="w-full min-h-screen bg-black flex flex-col">
-      {/* Featured Active Issue Player */}
-      <div className="w-full h-[calc(100dvh-128px)] md:h-[calc(100vh-64px)] bg-black relative border-b border-neutral-900 shrink-0 overflow-hidden">
-        {activeIssue.embed_code ? (
-          <EmbedRenderer key={activeIssue.id} html={sanitizedEmbedCode} />
-        ) : (
-          <iframe 
-            src={activeUrl} 
-            className="absolute inset-0 w-full h-full border-none"
-            title={activeIssue.title}
-            allowFullScreen
-          />
-        )}
+      {/* Featured Active Issue Player Container */}
+      <div className="w-full bg-black border-b border-neutral-900 py-6 md:py-10 shrink-0">
+        <div className="max-w-5xl mx-auto w-full px-4 md:px-6">
+          <div className="w-full h-[65vh] md:h-[75vh] bg-neutral-950 relative overflow-hidden rounded-xl shadow-2xl border border-neutral-800">
+            {activeIssue.embed_code ? (
+              <EmbedRenderer key={activeIssue.id} html={sanitizedEmbedCode} />
+            ) : (
+              <iframe 
+                src={activeUrl} 
+                className="absolute inset-0 w-full h-full border-none"
+                title={activeIssue.title}
+                allowFullScreen
+              />
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Issues Archive Section */}
