@@ -2,24 +2,49 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Play, ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 export const revalidate = 0;
 
-export default async function SeriesDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
+export default async function SeriesDetailPage(props: {
+  params: Promise<{ slug: string }>;
 }) {
   const supabase = await createClient();
-  const { id } = await params;
+  const params = await props.params;
+  const slug = params.slug;
 
-  // Fetch Series
-  const { data: series } = await supabase.from('series').select('*').eq('id', id).single();
-  if (!series) return notFound();
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  let series = null;
 
-  // Fetch Episodes
-  const { data: episodes } = await supabase.from('videos').select('*').eq('series_id', id).order('episode_number', { ascending: true });
+  // 1. Resolve Series by ID (Legacy UUID link) or Slug
+  if (uuidRegex.test(slug)) {
+    const { data: legacySeries } = await supabase
+      .from('series')
+      .select('*')
+      .eq('id', slug)
+      .single();
+
+    if (legacySeries) {
+      redirect(`/series/${legacySeries.slug}`);
+    }
+    return notFound();
+  } else {
+    const { data: slugSeries } = await supabase
+      .from('series')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (!slugSeries) return notFound();
+    series = slugSeries;
+  }
+
+  // 2. Fetch Episodes
+  const { data: episodes } = await supabase
+    .from('videos')
+    .select('*')
+    .eq('series_id', series.id)
+    .order('episode_number', { ascending: true });
 
   return (
     <div className="bg-black min-h-screen text-white pb-20">

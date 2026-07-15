@@ -245,7 +245,7 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
         
         {/* Back Button */}
         <div className="mb-4 flex items-center">
-          <Link href={series ? `/series/${series.id}` : '/'}>
+          <Link href={series ? (series.slug ? `/series/${series.slug}` : `/series/${series.id}`) : '/'}>
             <Button variant="ghost" className="text-gray-400 hover:text-white pl-0">
               <ArrowLeft className="w-5 h-5 mr-2" /> 
               Back to {series ? series.title : 'Home'}
@@ -315,7 +315,7 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
               <h1 className="text-2xl md:text-3xl font-bold mb-2">{video.title}</h1>
               {series && (
                 <div className="flex items-center gap-2 text-sm text-gray-400 mb-4 font-semibold">
-                  <Link href={`/series/${series.id}`} className="hover:text-pink-500 transition-colors">
+                  <Link href={series.slug ? `/series/${series.slug}` : `/series/${series.id}`} className="hover:text-pink-500 transition-colors">
                     {series.title}
                   </Link>
                   <span>•</span>
@@ -413,7 +413,7 @@ export function WatchClient({ video, series, allEpisodes, prevVideo, nextVideo, 
                   {suggestedSeries.map((s) => (
                     <Link 
                       key={s.id} 
-                      href={`/series/${s.id}`}
+                      href={s.slug ? `/series/${s.slug}` : `/series/${s.id}`}
                       className="group block relative aspect-[2/3] rounded-lg overflow-hidden"
                     >
                       <img 

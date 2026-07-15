@@ -52,6 +52,12 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
     return `/series/${seriesId}`;
   };
 
+  // Helper to find the slug of a series
+  const getSeriesSlug = (seriesId: string) => {
+    const s = filteredSeriesList.find(x => x.id === seriesId);
+    return s?.slug || seriesId;
+  };
+
   // 1. Trending Now Row (Series & Standalone Videos)
   const trendingSeries = filteredSeriesList.filter(s => s.category === 'Trending Now' || !s.category);
   const trendingVideos = filteredVideosList.filter(v => v.category === 'Trending Now' && !v.series_id);
@@ -61,7 +67,7 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
       id: s.id,
       title: s.title,
       img: s.poster_url || s.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
-      href: `/series/${s.id}`,
+      href: s.slug ? `/series/${s.slug}` : `/series/${s.id}`,
       type: 'series',
       created: new Date(s.created_at).getTime()
     })),
@@ -93,7 +99,7 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
       id: s.id,
       title: s.title,
       img: s.poster_url || s.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop',
-      href: `/series/${s.id}`,
+      href: s.slug ? `/series/${s.slug}` : `/series/${s.id}`,
       type: 'series',
       date: new Date(s.created_at).getTime()
     })),
@@ -211,7 +217,7 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
                   )}
 
                   {currentSlide?.series_id && (
-                    <Link href={`/series/${currentSlide.series_id}`}>
+                    <Link href={`/series/${getSeriesSlug(currentSlide.series_id)}`}>
                       <Button size="lg" variant="outline" className="bg-white/20 border-transparent backdrop-blur-md text-white hover:bg-white/30 h-12 px-6 md:px-8 rounded-md text-base transition-transform hover:scale-105">
                         <Info className="w-5 h-5 mr-2" /> More Info
                       </Button>
@@ -250,7 +256,7 @@ export function HomeRenderer({ seriesList, videosList, heroSlides }: { seriesLis
                       <Play className="w-5 h-5 mr-2 fill-black" /> Play
                     </Button>
                   </Link>
-                  <Link href={featuredSeries ? `/series/${featuredSeries.id}` : '#'}>
+                  <Link href={featuredSeries ? (featuredSeries.slug ? `/series/${featuredSeries.slug}` : `/series/${featuredSeries.id}`) : '#'}>
                     <Button size="lg" variant="outline" className="bg-white/20 border-transparent backdrop-blur-md text-white hover:bg-white/30 h-12 px-6 md:px-8 rounded-md text-base transition-transform hover:scale-105">
                       <Info className="w-5 h-5 mr-2" /> More Info
                     </Button>
