@@ -9,6 +9,8 @@ import { AdUnit } from '@/components/video/AdUnit';
 import { createClient } from '@/lib/supabase/client';
 
 const GenericPlayer: any = dynamic(() => import('react-player'), { ssr: false });
+import 'vimeo-video-element/react';
+import 'youtube-video-element/react';
 
 if (typeof window !== 'undefined') {
   const originalPlay = HTMLMediaElement.prototype.play;
