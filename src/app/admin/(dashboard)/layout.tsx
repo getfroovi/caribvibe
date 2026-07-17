@@ -26,12 +26,8 @@ export default async function AdminLayout({
       {/* Sidebar */}
       <aside className="w-64 border-r border-slate-200 bg-white p-6 flex flex-col h-full shadow-sm z-10 relative">
         <div className="mb-10 px-2 flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center">
-            <Video className="w-4 h-4 text-white" />
-          </div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
-            theGriot<span className="text-pink-600">.</span>io <span className="font-normal text-slate-400 text-sm ml-1">Admin</span>
-          </h1>
+          <img src="/logo.png" alt="theGriot.io" className="h-8 w-auto object-contain" />
+          <span className="font-normal text-slate-400 text-sm mt-1">Admin</span>
         </div>
         
         <nav className="space-y-1 flex-1">

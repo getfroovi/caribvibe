@@ -36,9 +36,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-black bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent tracking-tighter">
-              theGriot.io
-            </span>
+            <img src="/logo.png" alt="theGriot.io" className="h-8 md:h-10 w-auto object-contain bg-white/90 px-2 py-1 rounded-sm" />
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
